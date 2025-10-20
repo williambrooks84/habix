@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/components/ui/button';
 import { useActionState, useState, startTransition } from 'react';
@@ -102,7 +102,7 @@ export default function SignupForm() {
                             type="text"
                             placeholder="Enter your first name"
                             required
-                            icon={<AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
+                            icon={<UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
                         />
                         <FormInput
                             id="lastName"
@@ -111,7 +111,7 @@ export default function SignupForm() {
                             type="text"
                             placeholder="Enter your last name"
                             required
-                            icon={<AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
+                            icon={<UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
                         />
                     </div>
                     <FormInput
@@ -132,7 +132,7 @@ export default function SignupForm() {
                             type="password"
                             placeholder="Enter password"
                             required
-                            minLength={6}
+                            minLength={8}
                             icon={<KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
                         />
                     </div>
@@ -144,7 +144,7 @@ export default function SignupForm() {
                             type="password"
                             placeholder="Confirm password"
                             required
-                            minLength={6}
+                            minLength={8}
                             icon={<KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
                         />
                     </div>

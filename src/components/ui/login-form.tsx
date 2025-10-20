@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import FormInput from './form-input';
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -19,18 +20,16 @@ export default function LoginForm() {
     setErrorMessage(null);
     setIsPending(true);
     const fd = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(fd.entries());
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: fd.get("email"),
+      password: fd.get("password"),
     });
     setIsPending(false);
-    if (res.ok) {
+    if (res?.ok) {
       router.push('/');
     } else {
-      const result = await res.json().catch(() => ({}));
-      setErrorMessage(result.error || 'Login failed.');
+      setErrorMessage("Invalid email or password.");
     }
   }
 
@@ -58,7 +57,6 @@ export default function LoginForm() {
               type="password"
               placeholder="Enter password"
               required
-              minLength={6}
               icon={<KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />}
             />
           </div>

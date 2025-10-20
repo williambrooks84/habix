@@ -1,0 +1,17 @@
+environment:
+  node: "18"
+  packageManager: "npm"
+  buildCommand: "npm run build"
+  startCommand: "npm run start"
+  env:
+    NEXT_PUBLIC_API_URL: "http://localhost:3000"
+    DATABASE_URL: "your-database-url"
+dependencies:
+  - next@15.5.5
+  - react@19.1.0
+  - react-dom@19.1.0
+  - next-auth@4.24.11
+  - postgres@3.4.7
+setup:
+  - run: npm install
+  - run: npm run build

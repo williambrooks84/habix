@@ -1,7 +1,7 @@
 import sql from '../../../lib/database';
 import { hashPassword } from '../../../lib/auth-utils';
 import { toUserResponse } from '../../../lib/database';
-// Define CreateUserInput type locally or import it if defined elsewhere
+
 type CreateUserInput = {
   firstName: string;
   lastName: string;
