@@ -4,7 +4,7 @@ import * as bcrypt from 'bcryptjs'
 
 export async function getUsers(): Promise<UserDef[]> {
   const users = await prisma.user.findMany({ orderBy: { id: 'desc' } })
-  return users.map(u => ({
+  return users.map((u: any) => ({
     id: String(u.id),
     createdAt: u.createdAt,
     email: u.email,
