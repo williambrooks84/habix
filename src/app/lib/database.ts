@@ -12,7 +12,6 @@ export function toUserResponse(row: any): UserResponse {
     firstName: row.first_name,
     lastName: row.last_name,
     email: row.email,
-    isVerified: row.is_verified,
     createdAt: row.created_at,
   };
 }

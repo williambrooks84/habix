@@ -41,9 +41,9 @@ export async function createUser(data: {
     data: {
       email: data.email,
       password: hashedPassword,
-      firstName: data.firstName ?? '',
-      lastName: data.lastName ?? '',
-    },
+      firstName: data.firstName ?? "",
+      lastName: data.lastName ?? "",
+    }
   })
 
   return {
