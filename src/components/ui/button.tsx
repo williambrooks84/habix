@@ -1,15 +1,15 @@
 import clsx from 'clsx';
+import { ButtonProps } from '@/types/ui';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}
+export function Button({ children, className, style, ...rest }: ButtonProps) {
+  const mergedStyle = { backgroundColor: 'var(--shadcn-primary)', color: 'var(--shadcn-primary-foreground)', ...(style || {}) } as React.CSSProperties;
 
-export function Button({ children, className, ...rest }: ButtonProps) {
   return (
     <button
       {...rest}
+      style={mergedStyle}
       className={clsx(
-        'flex h-10 items-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-400 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+        'flex h-12 w-full items-center justify-center rounded-full px-6 text-base font-medium transition-colors hover:opacity-95 focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-primary active:opacity-95 aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
         className,
       )}
     >

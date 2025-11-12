@@ -1,26 +1,101 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap');
+@import "tailwindcss/preflight";
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core colors */
+  --primary: #04D6AB;
+  --background-light: #FFFFFF;
+  --foreground-light: #0F172A;
+  --background-dark: #031522;
+  --foreground-dark: #F8FAFC;
+
+  /* Light theme (default) */
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+
+  /* shadcn-compatible tokens - Light theme */
+  --shadcn-background: var(--background);
+  --shadcn-foreground: var(--foreground);
+  --shadcn-primary: var(--primary);
+  --shadcn-primary-foreground: #00221a;
+  --shadcn-muted: #f1f5f9;
+  --shadcn-muted-foreground: #64748b;
+  --shadcn-border: #e2e8f0;
+  --shadcn-input: #ffffff;
+  --shadcn-ring: var(--primary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark theme (prefers-color-scheme) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--background-dark);
+    --foreground: var(--foreground-dark);
+
+    --shadcn-background: var(--background);
+    --shadcn-foreground: var(--foreground);
+    --shadcn-muted: rgba(255,255,255,0.04);
+    --shadcn-muted-foreground: rgba(255,255,255,0.6);
+    --shadcn-border: rgba(255,255,255,0.12);
+    --shadcn-input: rgba(255,255,255,0.02);
+    --shadcn-ring: var(--primary);
   }
 }
 
+/* Manual dark theme override */
+:root[data-theme="dark"] {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  
+  --shadcn-background: var(--background);
+  --shadcn-foreground: var(--foreground);
+  --shadcn-muted: rgba(255,255,255,0.04);
+  --shadcn-muted-foreground: rgba(255,255,255,0.6);
+  --shadcn-border: rgba(255,255,255,0.12);
+  --shadcn-input: rgba(255,255,255,0.02);
+  --shadcn-ring: var(--primary);
+}
+
+/* Class-based dark mode */
+.dark {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  
+  --shadcn-background: var(--background);
+  --shadcn-foreground: var(--foreground);
+  --shadcn-muted: rgba(255,255,255,0.04);
+  --shadcn-muted-foreground: rgba(255,255,255,0.6);
+  --shadcn-border: rgba(255,255,255,0.12);
+  --shadcn-input: rgba(255,255,255,0.02);
+  --shadcn-ring: var(--primary);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--shadcn-background);
+  color: var(--shadcn-foreground);
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+/* Add base styles manually since @tailwind base is gone in v4 */
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+/* Ensure text elements have proper sizing */
+h1 { font-size: 2.25rem; line-height: 2.5rem; }
+h2 { font-size: 1.875rem; line-height: 2.25rem; }
+h3 { font-size: 1.5rem; line-height: 2rem; }
+h4 { font-size: 1.25rem; line-height: 1.75rem; }
+h5 { font-size: 1.125rem; line-height: 1.75rem; }
+h6 { font-size: 1rem; line-height: 1.5rem; }
+
+p {
+  margin-bottom: 1rem;
 }
