@@ -1,24 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap');
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap");
+@import "tailwindcss";
 
+/* 🔥 Tailwind v4 now reads theme tokens from here */
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #00221a;
+  --color-muted: var(--shadcn-muted);
+  --color-muted-foreground: var(--shadcn-muted-foreground);
+  --color-border: var(--shadcn-border);
+  --color-input: var(--shadcn-input);
+  --color-ring: var(--shadcn-ring);
+  --color-text: var(--text-color);
+  --color-button-text: var(--button-text-color);
+}
+
+/* ===== CSS Variables ===== */
 :root {
-  /* Core colors */
+  --text-color: #000000;
+  --button-text-color: #ffffff;
   --primary: #04D6AB;
-  --background-light: #FFFFFF;
-  --foreground-light: #0F172A;
+  --background-light: #ffffff;
+  --foreground-light: #0f172a;
   --background-dark: #031522;
-  --foreground-dark: #F8FAFC;
+  --foreground-dark: #f8fafc;
 
-  /* Light theme (default) */
   --background: var(--background-light);
   --foreground: var(--foreground-light);
 
-  /* shadcn-compatible tokens - Light theme */
-  --shadcn-background: var(--background);
-  --shadcn-foreground: var(--foreground);
-  --shadcn-primary: var(--primary);
-  --shadcn-primary-foreground: #00221a;
   --shadcn-muted: #f1f5f9;
   --shadcn-muted-foreground: #64748b;
   --shadcn-border: #e2e8f0;
@@ -26,76 +36,35 @@
   --shadcn-ring: var(--primary);
 }
 
-/* Dark theme (prefers-color-scheme) */
+/* ===== Dark Mode ===== */
 @media (prefers-color-scheme: dark) {
   :root {
+    --text-color: #ffffff;
+    --button-text-color: #000000;
     --background: var(--background-dark);
     --foreground: var(--foreground-dark);
-
-    --shadcn-background: var(--background);
-    --shadcn-foreground: var(--foreground);
-    --shadcn-muted: rgba(255,255,255,0.04);
-    --shadcn-muted-foreground: rgba(255,255,255,0.6);
-    --shadcn-border: rgba(255,255,255,0.12);
-    --shadcn-input: rgba(255,255,255,0.02);
-    --shadcn-ring: var(--primary);
+    --shadcn-muted: rgba(255, 255, 255, 0.04);
+    --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
+    --shadcn-border: rgba(255, 255, 255, 0.12);
+    --shadcn-input: rgba(255, 255, 255, 0.02);
   }
 }
 
-/* Manual dark theme override */
-:root[data-theme="dark"] {
-  --background: var(--background-dark);
-  --foreground: var(--foreground-dark);
-  
-  --shadcn-background: var(--background);
-  --shadcn-foreground: var(--foreground);
-  --shadcn-muted: rgba(255,255,255,0.04);
-  --shadcn-muted-foreground: rgba(255,255,255,0.6);
-  --shadcn-border: rgba(255,255,255,0.12);
-  --shadcn-input: rgba(255,255,255,0.02);
-  --shadcn-ring: var(--primary);
-}
-
-/* Class-based dark mode */
+:root[data-theme="dark"],
 .dark {
+  --text-color: #ffffff;
+  --button-text-color: #000000;
   --background: var(--background-dark);
   --foreground: var(--foreground-dark);
-  
-  --shadcn-background: var(--background);
-  --shadcn-foreground: var(--foreground);
-  --shadcn-muted: rgba(255,255,255,0.04);
-  --shadcn-muted-foreground: rgba(255,255,255,0.6);
-  --shadcn-border: rgba(255,255,255,0.12);
-  --shadcn-input: rgba(255,255,255,0.02);
-  --shadcn-ring: var(--primary);
+  --shadcn-muted: rgba(255, 255, 255, 0.04);
+  --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
+  --shadcn-border: rgba(255, 255, 255, 0.12);
+  --shadcn-input: rgba(255, 255, 255, 0.02);
 }
 
+/* ===== Base Styles ===== */
 body {
-  background-color: var(--shadcn-background);
-  color: var(--shadcn-foreground);
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
-}
-
-/* Add base styles manually since @tailwind base is gone in v4 */
-html {
-  font-family: 'Inter', system-ui, sans-serif;
-  line-height: 1.5;
-  -webkit-text-size-adjust: 100%;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-}
-
-/* Ensure text elements have proper sizing */
-h1 { font-size: 2.25rem; line-height: 2.5rem; }
-h2 { font-size: 1.875rem; line-height: 2.25rem; }
-h3 { font-size: 1.5rem; line-height: 2rem; }
-h4 { font-size: 1.25rem; line-height: 1.75rem; }
-h5 { font-size: 1.125rem; line-height: 1.75rem; }
-h6 { font-size: 1rem; line-height: 1.5rem; }
-
-p {
-  margin-bottom: 1rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Inter', sans-serif;
 }

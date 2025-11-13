@@ -5,8 +5,15 @@ export type LogosProps = {
 	size?: number;
 };
 
+export type ButtonVariant = 'primary';
+export type ButtonSize = 'normal';
+
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
 }
 
 export type FormInputProps = {
@@ -20,7 +27,3 @@ export type FormInputProps = {
   icon?: React.ReactNode;
   className?: string;
 };
-
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-}

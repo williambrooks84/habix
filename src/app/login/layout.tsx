@@ -9,8 +9,7 @@ export default function LoginLayout({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-center justify-center">
       <article
-        // dark card to match the Figma look, with internal padding so the logo never touches edges
-        className="w-full max-w-md p-8 rounded-2xl shadow-lg text-white"
+        className="w-full max-w-md flex flex-col gap-16"
         role="region"
         aria-labelledby="login-heading"
       >

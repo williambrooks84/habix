@@ -1,12 +1,10 @@
 'use client';
 
-import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import FormInput from './form-input';
-import { signIn } from "next-auth/react";
+import { signIn } from 'next-auth/react';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -20,24 +18,27 @@ export default function LoginForm() {
     setErrorMessage(null);
     setIsPending(true);
     const fd = new FormData(e.currentTarget);
-    const res = await signIn("credentials", {
+    const res = await signIn('credentials', {
       redirect: false,
-      email: fd.get("email"),
-      password: fd.get("password"),
+      email: fd.get('email'),
+      password: fd.get('password'),
     });
     setIsPending(false);
     if (res?.ok) {
       router.push('/');
     } else {
-      setErrorMessage("Invalid email or password.");
+      setErrorMessage('Invalid email or password.');
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full">
-      <div className="w-full">
-
-        <div className="w-full">
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full flex mx-auto flex-col gap-4 mt-6"
+        aria-live="polite"
+      >
+        <div className="flex flex-col gap-4">
           <FormInput
             id="email"
             name="email"
@@ -45,38 +46,45 @@ export default function LoginForm() {
             type="email"
             placeholder="vous@exemple.com"
             required
-            className="h-[63px]"
-            icon={<AtSymbolIcon className="h-5 w-5" />}
           />
 
-          <div className="mt-4">
-            <FormInput
-              id="password"
-              name="password"
-              label="Mot de passe"
-              type="password"
-              placeholder="••••••••"
-              required
-              className="h-[63px]"
-              icon={<KeyIcon className="h-5 w-5" />}
-            />
-          </div>
+          <FormInput
+            id="password"
+            name="password"
+            label="Mot de passe"
+            type="password"
+            placeholder="••••••••"
+            required
+          />
         </div>
 
         <input type="hidden" name="redirectTo" value={callbackUrl} />
 
-        <Button type="submit" className="mt-6 w-full" aria-disabled={isPending}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="normal"
+          className="mt-2"
+          disabled={isPending}
+        >
           Se connecter
         </Button>
 
-        <div className="flex items-center justify-center mt-4 text-center" aria-live="polite" aria-atomic="true">
-          {errorMessage ? (
-            <p className="text-sm text-red-500">{errorMessage}</p>
-          ) : (
-            <div className="text-sm text-muted">Pas encore de compte ? <a href="/signup" className="text-primary font-medium ml-2">S’inscrire</a></div>
-          )}
-        </div>
+        {errorMessage && (
+          <div className="flex items-center justify-center mt-2 text-center">
+            <p className="text-sm text-destructive">{errorMessage}</p>
+          </div>
+        )}
+      </form>
+
+      <div className="flex items-center justify-center text-center mt-16">
+        <p className="text-xl text-foreground">
+          Pas encore de compte ?
+          <a href="/signup" className="text-primary font-medium ml-2">
+            S’inscrire
+          </a>
+        </p>
       </div>
-    </form>
+    </>
   );
 }
