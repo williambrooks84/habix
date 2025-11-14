@@ -200,8 +200,8 @@ export default function SignupForm() {
         )}
       </form>
 
-      <div className="flex items-center justify-center text-center mt-16">
-        <p className="text-xl text-foreground">
+      <div className="flex items-center justify-center text-center mt-8">
+        <p className="text-lg text-foreground">
           Déjà un compte ?
           <a href="/login" className="text-primary font-medium ml-2">
             Connectez-vous

@@ -78,7 +78,7 @@ export default function LoginForm() {
       </form>
 
       <div className="flex items-center justify-center text-center mt-16">
-        <p className="text-xl text-foreground">
+        <p className="text-lg text-foreground">
           Pas encore de compte ?
           <a href="/signup" className="text-primary font-medium ml-2">
             S’inscrire

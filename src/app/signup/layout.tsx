@@ -9,7 +9,7 @@ export default function LoginLayout({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-center justify-center">
       <article
-        className="w-full max-w-md flex flex-col gap-16"
+        className="w-full max-w-md flex flex-col gap-8"
         role="region"
         aria-labelledby="signup-heading"
       >
