@@ -14,11 +14,15 @@
   --color-ring: var(--shadcn-ring);
   --color-text: var(--text-color);
   --color-button-text: var(--button-text-color);
+
+  /* ✅ use shadcn-compatible naming for errors */
+  --color-destructive: var(--error);
+  --color-destructive-foreground: #ffffff;
 }
 
 /* ===== CSS Variables ===== */
 :root {
-  --text-color: #000000;
+  --error: #ef4444; /* nicer red than #F00 */
   --button-text-color: #ffffff;
   --primary: #04D6AB;
   --background-light: #ffffff;
@@ -39,7 +43,7 @@
 /* ===== Dark Mode ===== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-color: #ffffff;
+    --error: #f87171;
     --button-text-color: #000000;
     --background: var(--background-dark);
     --foreground: var(--foreground-dark);
@@ -52,7 +56,7 @@
 
 :root[data-theme="dark"],
 .dark {
-  --text-color: #ffffff;
+  --error: #f87171;
   --button-text-color: #000000;
   --background: var(--background-dark);
   --foreground: var(--foreground-dark);
