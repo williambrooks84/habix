@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Header from "@/components/ui/header";
+import Header from "@/components/ui/auth/header";
 
 export const metadata = {
   title: "Login - Habix",

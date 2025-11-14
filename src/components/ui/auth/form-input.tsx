@@ -13,24 +13,34 @@ export default function FormInput({
   value,
   onChange,
   onBlur,
+  error = null,
   className = '',
-}: FormInputProps & { value?: string; onChange?: (v: string) => void; onBlur?: () => void }) {
+}: FormInputProps & {
+  value?: string;
+  onChange?: (v: string) => void;
+  onBlur?: () => void;
+  error?: string | null;
+}) {
   const [focused, setFocused] = useState(false);
   const [localValue, setLocalValue] = useState('');
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value! : localValue;
 
-  const internalValue = value ?? '';
-  const active = focused || currentValue.length > 0;
+  const active = focused;
+  const hasError = Boolean(error);
+  // only show destructive styles when there is an error AND the input contains text
+  const showError = hasError && currentValue.length > 0;
 
   return (
     <div
       className={`relative rounded-2xl border px-4 py-3 flex flex-col gap-1 transition-colors ${
-        active ? 'border-primary' : 'border-foreground'
+        showError ? 'border-destructive' : active ? 'border-primary' : 'border-foreground'
       } ${className}`}
     >
       {icon && (
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+        <div
+          className={`absolute left-4 top-1/2 -translate-y-1/2 ${showError ? 'text-destructive' : 'text-muted'}`}
+        >
           {icon}
         </div>
       )}
@@ -38,7 +48,7 @@ export default function FormInput({
       <label
         htmlFor={id}
         className={`block text-base font-semibold leading-none ${icon ? 'pl-8' : ''} transition-colors ${
-          active ? 'text-primary' : 'text-foreground'
+          showError ? 'text-destructive' : active ? 'text-primary' : 'text-foreground'
         }`}
       >
         {label}
@@ -73,6 +83,7 @@ export default function FormInput({
           icon ? 'pl-8' : ''
         }`}
       />
+      {showError && <p className="mt-1 text-sm text-destructive">{error}</p>}
     </div>
   );
 }

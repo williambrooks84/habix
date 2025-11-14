@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useActionState, useState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { useSearchParams } from 'next/navigation';
-import FormInput from './form-input';
+import FormInput from '../ui/auth/form-input';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -102,19 +102,23 @@ export default function SignupForm() {
 
   function handleChange(name: string, val: string) {
     setForm(prev => ({ ...prev, [name]: val }));
-    const err = name === 'email'
-      ? (verifyEmailFormat(val) ? null : 'Email invalide')
-      : name === 'password'
-      ? (() => {
-          const checks = isPasswordStrong(val);
-          const missing: string[] = [];
-          if (!checks.length) missing.push('au moins 8 caractères');
-          if (!checks.number) missing.push('un nombre');
-          if (!checks.uppercase) missing.push('une lettre majuscule');
-          if (!checks.special) missing.push('un caractère spécial');
-          return missing.length > 0 ? `Le mot de passe doit inclure ${missing.join(', ')}.` : null;
-        })()
-      : null;
+    const err =
+      name === 'email'
+        ? (verifyEmailFormat(val) ? null : 'Email invalide')
+        : name === 'password'
+        ? (() => {
+            const checks = isPasswordStrong(val);
+            const missing: string[] = [];
+            if (!checks.length) missing.push('au moins 8 caractères');
+            if (!checks.number) missing.push('un nombre');
+            if (!checks.uppercase) missing.push('une lettre majuscule');
+            if (!checks.special) missing.push('un caractère spécial');
+            return missing.length > 0 ? `Le mot de passe doit inclure ${missing.join(', ')}.` : null;
+          })()
+        : name === 'confirmpassword'
+        ? (val !== form.password ? 'Les mots de passe ne sont pas identiques.' : null)
+        : null;
+
     setErrors(prev => ({ ...prev, [name]: err }));
   }
 
@@ -126,18 +130,24 @@ export default function SignupForm() {
             <FormInput
               id="firstName"
               name="firstName"
-              label="First Name"
+              label="Prénom"
               type="text"
               placeholder="Enter your first name"
               required
+              value={form.firstName}
+              onChange={(v) => handleChange('firstName', v)}
+              error={errors.firstName}
             />
             <FormInput
               id="lastName"
               name="lastName"
-              label="Last Name"
+              label="Nom"
               type="text"
               placeholder="Enter your last name"
               required
+              value={form.lastName}
+              onChange={(v) => handleChange('lastName', v)}
+              error={errors.lastName}
             />
           </div>
 
@@ -146,38 +156,38 @@ export default function SignupForm() {
             name="email"
             label="Email"
             type="email"
-            placeholder="Enter your email address"
+            placeholder="vous@exemple.com"
             required
             value={form.email}
             onChange={(v) => handleChange('email', v)}
+            error={errors.email}
           />
-          {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
 
           <FormInput
             id="password"
             name="password"
-            label="Password"
+            label="Mot de passe"
             type="password"
-            placeholder="Enter password"
+            placeholder="••••••••"
             required
             minLength={8}
             value={form.password}
             onChange={(v) => handleChange('password', v)}
+            error={errors.password}
           />
-          {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
 
           <FormInput
             id="confirmpassword"
             name="confirmpassword"
-            label="Confirm Password"
+            label="Confirmer mot de passe"
             type="password"
-            placeholder="Confirm password"
+            placeholder="••••••••"
             required
             minLength={8}
             value={form.confirmpassword}
             onChange={(v) => handleChange('confirmpassword', v)}
+            error={errors.confirmpassword}
           />
-          {errors.confirmpassword && <p className="text-sm text-destructive">{errors.confirmpassword}</p>}
         </div>
 
         <input type="hidden" name="redirectTo" value={callbackUrl} />
