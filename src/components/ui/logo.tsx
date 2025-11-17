@@ -3,22 +3,67 @@ import type { LogosProps } from '@/types/ui';
 import Image from "next/image";
 import React from "react";
 
-function usePrefersDark() {
-	const [prefersDark, setPrefersDark] = React.useState<boolean | null>(null);
+function useEffectiveTheme() {
+	const getInitial = (): boolean | null => {
+		if (typeof window === 'undefined') return null;
+		try {
+			const stored = localStorage.getItem('theme');
+			if (stored === 'dark') return true;
+			if (stored === 'light') return false;
+		} catch (e) {
+		}
+
+		try {
+			const html = document.documentElement;
+			const data = html.getAttribute('data-theme');
+			if (data === 'dark') return true;
+			if (data === 'light') return false;
+			if (html.classList.contains('dark')) return true;
+		} catch (e) {
+		}
+
+		try {
+			const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
+			if (mq) return !!mq.matches;
+		} catch (e) {}
+
+		return false;
+	};
+
+	const [prefersDark, setPrefersDark] = React.useState<boolean | null>(getInitial);
+
 	React.useEffect(() => {
-		if (typeof window === "undefined") return;
-		const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
-		const update = () => setPrefersDark(!!mq?.matches);
-		update();
-		mq?.addEventListener?.("change", update);
-		return () => mq?.removeEventListener?.("change", update);
+		if (typeof window === 'undefined') return;
+
+		// watch for changes from other tabs/localStorage
+		const onStorage = (e: StorageEvent) => {
+			if (e.key === 'theme') {
+				setPrefersDark(e.newValue === 'dark');
+			}
+		};
+		window.addEventListener('storage', onStorage);
+
+		let mq: MediaQueryList | null = null;
+		try {
+			mq = window.matchMedia('(prefers-color-scheme: dark)');
+			const mqHandler = () => setPrefersDark(mq ? mq.matches : false);
+			mq.addEventListener?.('change', mqHandler);
+		} catch (e) {
+			mq = null;
+		}
+
+		return () => {
+			window.removeEventListener('storage', onStorage);
+			try { mq?.removeEventListener?.('change', () => {}); } catch (e) {}
+		};
 	}, []);
+
 	return prefersDark;
 }
 
 export default function Logo({ variant = 1, mode = "auto", className = "", size }: LogosProps) {
-	const prefersDark = usePrefersDark();
-	const isDark = mode === "dark" || (mode === "auto" && prefersDark === true);
+	const prefersDark = useEffectiveTheme();
+	const isDark = mode === 'dark' || (mode === 'auto' && prefersDark === true);
 
 	const base = variant === 1 ? "/assets/logo" : "/assets/logo2";
 	const file = isDark
@@ -28,10 +73,8 @@ export default function Logo({ variant = 1, mode = "auto", className = "", size 
 	const isSvg = file.endsWith(".svg");
 
 	return (
-		// inline-block ensures this wrapper participates in normal flow and margins work predictably
 		<div className={`inline-block ${className}`}>
 			{isSvg ? (
-				// Render img as block so it doesn't leave inline-gap or baseline offsets
 				<img
 					src={file}
 					alt="logo"

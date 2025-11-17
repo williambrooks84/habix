@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap");
 @import "tailwindcss";
 
-/* 🔥 Tailwind v4 now reads theme tokens from here */
+/* 🔥 Tailwind v4 reads tokens from here */
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -11,25 +11,28 @@
   --color-muted-foreground: var(--shadcn-muted-foreground);
   --color-border: var(--shadcn-border);
   --color-input: var(--shadcn-input);
-  --color-ring: var(--shadcn-ring);
+  --color-ring: var(--primary);
   --color-text: var(--text-color);
   --color-button-text: var(--button-text-color);
 
-  /* ✅ use shadcn-compatible naming for errors */
+  /* shadcn naming */
   --color-destructive: var(--error);
   --color-destructive-foreground: #ffffff;
 }
 
 /* ===== CSS Variables ===== */
 :root {
-  --error: #ef4444; /* nicer red than #F00 */
+  --error: #ef4444;
   --button-text-color: #ffffff;
   --primary: #04D6AB;
+
   --background-light: #ffffff;
   --foreground-light: #0f172a;
+
   --background-dark: #031522;
   --foreground-dark: #f8fafc;
 
+  /* Defaults (light mode) */
   --background: var(--background-light);
   --foreground: var(--foreground-light);
 
@@ -40,30 +43,35 @@
   --shadcn-ring: var(--primary);
 }
 
-/* ===== Dark Mode ===== */
+/* ===== Dark Mode (user-selected) ===== */
+:root[data-theme="dark"],
+.dark {
+  --error: #f87171;
+  --button-text-color: #000000;
+
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+
+  --shadcn-muted: rgba(255, 255, 255, 0.04);
+  --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
+  --shadcn-border: rgba(255, 255, 255, 0.12);
+  --shadcn-input: rgba(255, 255, 255, 0.02);
+}
+
+/* ===== System Preference (only when NO data-theme is set) ===== */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --error: #f87171;
     --button-text-color: #000000;
+
     --background: var(--background-dark);
     --foreground: var(--foreground-dark);
+
     --shadcn-muted: rgba(255, 255, 255, 0.04);
     --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
     --shadcn-border: rgba(255, 255, 255, 0.12);
     --shadcn-input: rgba(255, 255, 255, 0.02);
   }
-}
-
-:root[data-theme="dark"],
-.dark {
-  --error: #f87171;
-  --button-text-color: #000000;
-  --background: var(--background-dark);
-  --foreground: var(--foreground-dark);
-  --shadcn-muted: rgba(255, 255, 255, 0.04);
-  --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
-  --shadcn-border: rgba(255, 255, 255, 0.12);
-  --shadcn-input: rgba(255, 255, 255, 0.02);
 }
 
 /* ===== Base Styles ===== */
