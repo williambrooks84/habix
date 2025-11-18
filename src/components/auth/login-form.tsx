@@ -10,7 +10,7 @@ import { signIn } from 'next-auth/react';
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   // form state and validation
   const [form, setForm] = useState({ email: '', password: '' });

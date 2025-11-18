@@ -1,7 +1,7 @@
 "use client";
 import dynamic from 'next/dynamic';
 
-const Logo = dynamic(() => import('@/components/ui/logo'), { ssr: true });
+const Logo = dynamic(() => import('@/components/ui/logo'), { ssr: false });
 
 export default function Header() {
     return (
