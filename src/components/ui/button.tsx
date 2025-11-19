@@ -20,16 +20,12 @@ export function Button({ children, className, style, href, ...rest }: ButtonProp
   const base =
     'flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-primary aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
 
-  // pull variant/size out so they are not forwarded to the DOM element
   const { variant = 'primary', size = 'normal', ...buttonProps } = rest as any;
 
-  // Build final className deterministically so server and client match
   const finalClassName = cn(base, variants[variant] ?? variants.primary, sizes[size] ?? sizes.normal, className);
 
-  // Avoid forwarding undefined style (keeps server/client parity)
   const forwardedStyle = style ?? undefined;
 
-  // If an href is provided render an anchor instead of a button
   if (href) {
     return (
       <a

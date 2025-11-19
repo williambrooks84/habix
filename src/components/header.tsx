@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="w-full px-4 py-3 flex items-center ">
+      <header className="fixed top-0 left-0 w-full z-50 h-14 px-4 flex items-center bg-transparent">
         <div>
           {showBurger && (
             <button
