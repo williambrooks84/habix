@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { ButtonProps } from '@/types/ui';
 
-export function Button({ children, className, style, ...rest }: ButtonProps) {
+export function Button({ children, className, style, href, ...rest }: ButtonProps) {
   const cn = (...args: any[]) => clsx(...args);
 
   const variants: Record<string, string> = {
@@ -28,6 +28,20 @@ export function Button({ children, className, style, ...rest }: ButtonProps) {
 
   // Avoid forwarding undefined style (keeps server/client parity)
   const forwardedStyle = style ?? undefined;
+
+  // If an href is provided render an anchor instead of a button
+  if (href) {
+    return (
+      <a
+        href={href}
+        {...(buttonProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...(forwardedStyle ? { style: forwardedStyle } : {})}
+        className={finalClassName}
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
     <button

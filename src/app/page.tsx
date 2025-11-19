@@ -2,6 +2,8 @@
 
 import { useSession } from "next-auth/react";
 import Loading from "@/components/ui/loading";
+import HomeDisconnected from '@/components/home-disconnected';
+import { DivideIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -12,11 +14,29 @@ export default function Home() {
   }
 
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <p className="text-3xl">Welcome back, {userName}!</p>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+    <div>
+      {session ? (
+        <main
+          className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start"
+          aria-labelledby="welcome-heading"
+        >
+          <article>
+            <h1 id="welcome-heading" className="text-3xl font-semibold">
+              Bienvenue, {userName}!
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Contenu personnalisé disponible une fois connecté.
+            </p>
+          </article>
+        </main>
+      ) : (
+        <HomeDisconnected />
+      )}
+
+      <footer
+        className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"
+        role="contentinfo"
+      >
         {/* ... */}
       </footer>
     </div>

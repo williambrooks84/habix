@@ -14,6 +14,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
+  href?: string;
 }
 
 export type FormInputProps = {
