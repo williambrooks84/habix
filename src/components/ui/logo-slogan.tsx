@@ -1,8 +1,11 @@
-import Logo from "@/components/ui/logo"
+"use client";
+import dynamic from 'next/dynamic';
 
-export default function LogoSlogan(){
+const Logo = dynamic(() => import('@/components/ui/logo'), { ssr: false });
+
+export default function LogoSlogan() {
     return (
-                <header className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3">
             <figure className="max-w-70 mx-auto">
                 <div className="flex justify-center">
                     <Logo variant={1} />
@@ -11,6 +14,6 @@ export default function LogoSlogan(){
             <p className="text-sm text-foreground">
                 Suivez vos habitudes, transformez votre vie
             </p>
-        </header>
+        </div>
     )
 }

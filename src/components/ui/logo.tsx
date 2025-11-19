@@ -35,6 +35,9 @@ function useEffectiveTheme() {
 	React.useEffect(() => {
 		if (typeof window === 'undefined') return;
 
+		// sync immediately on mount
+		setPrefersDark(getInitial());
+
 		// watch for changes from other tabs/localStorage
 		const onStorage = (e: StorageEvent) => {
 			if (e.key === 'theme') {
@@ -43,18 +46,41 @@ function useEffectiveTheme() {
 		};
 		window.addEventListener('storage', onStorage);
 
+		// media query listener (with backward-compatible addListener)
 		let mq: MediaQueryList | null = null;
+		let mqHandler: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | null = null;
 		try {
 			mq = window.matchMedia('(prefers-color-scheme: dark)');
-			const mqHandler = () => setPrefersDark(mq ? mq.matches : false);
-			mq.addEventListener?.('change', mqHandler);
+			mqHandler = (ev: MediaQueryListEvent) => setPrefersDark(ev.matches);
+			if (typeof mq.addEventListener === 'function') {
+				mq.addEventListener('change', mqHandler as any);
+			} else if (typeof (mq as any).addListener === 'function') {
+				(mq as any).addListener(mqHandler);
+			}
 		} catch (e) {
 			mq = null;
+			mqHandler = null;
 		}
+
+		// observe attribute/class changes on <html> to detect theme toggles
+		const html = document.documentElement;
+		const mo = new MutationObserver(() => setPrefersDark(getInitial()));
+		try {
+			mo.observe(html, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+		} catch (e) {}
 
 		return () => {
 			window.removeEventListener('storage', onStorage);
-			try { mq?.removeEventListener?.('change', () => {}); } catch (e) {}
+			try {
+				if (mq && mqHandler) {
+					if (typeof mq.removeEventListener === 'function') {
+						mq.removeEventListener('change', mqHandler as any);
+					} else if (typeof (mq as any).removeListener === 'function') {
+						(mq as any).removeListener(mqHandler);
+					}
+				}
+			} catch (e) {}
+			try { mo.disconnect(); } catch (e) {}
 		};
 	}, []);
 
