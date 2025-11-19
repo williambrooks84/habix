@@ -5,8 +5,8 @@ export type LogosProps = {
 	size?: number;
 };
 
-export type ButtonVariant = 'primary';
-export type ButtonSize = 'normal';
+export type ButtonVariant = 'primary' | 'transparent';
+export type ButtonSize = 'small' | 'normal' | 'paddingless';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -26,4 +26,17 @@ export type FormInputProps = {
   minLength?: number;
   icon?: React.ReactNode;
   className?: string;
+};
+
+//Menu
+export type MenuOverlayProps = {
+    open: boolean;
+    onClose: () => void;
+};
+
+export type MenuItemProps = {
+  children: React.ReactNode;
+  className?: string;
+  href?: string;
+  onClick?: () => void;
 };
