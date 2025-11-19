@@ -3,13 +3,10 @@ import LogoSlogan from "@/components/ui/logo-slogan";
 
 export default function HomeDisconnected() {
     return (
-        <main
-            className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-            role="main"
-        >
-            <section aria-labelledby="home-title" className="flex flex-col gap-15">
+        <section className="flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 text-center">
+            <div className="flex flex-col gap-15">
                 <LogoSlogan />
-                <nav aria-label="Actions principales" className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                <nav aria-label="Actions principales" className="flex flex-col gap-4 items-center justify-center">
                     <Button href="/signup" className="w-full sm:w-auto">
                         Commencer gratuitement
                     </Button>
@@ -17,7 +14,7 @@ export default function HomeDisconnected() {
                         J'ai déjà un compte
                     </a>
                 </nav>
-            </section>
-        </main>
+            </div>
+        </section>
     );
 }

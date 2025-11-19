@@ -1,4 +1,7 @@
 // scripts/setup-database.ts
+
+//Commande d'exécution: npx tsx scripts/setup-database.ts
+
 import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 import { resolve } from 'path';
@@ -48,6 +51,43 @@ async function setupDatabase() {
     if (result.length > 0) {
       console.log('✅ Users table verified and ready to use!');
     }
+
+    // Create categories table
+    await sql`
+      CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(200) NOT NULL UNIQUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `;
+
+    // Default categories
+    await sql`
+      INSERT INTO categories (name) VALUES
+        ('Santé'), ('Productivité'), ('Loisirs'), ('Apprentissage'), ('Bien-être')
+      ON CONFLICT (name) DO NOTHING
+    `;
+
+    console.log('✅ Categories table created (or already exists)');
+
+    // Create habits table
+    await sql`
+      CREATE TABLE IF NOT EXISTS habits (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        motivation TEXT,
+        period_start TIMESTAMP WITH TIME ZONE,
+        period_end TIMESTAMP WITH TIME ZONE,
+        frequency VARCHAR(50),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `;
+
+    console.log('✅ Habits table created (or already exists)');
 
   } catch (error) {
     console.error('❌ Error creating tables:', error);

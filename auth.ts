@@ -20,6 +20,23 @@ async function getUser(email: string): Promise<User | undefined> {
  
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  callbacks: {
+    async jwt({ token, user }) {
+      // On first sign in, persist extra fields from the returned user into the token
+      if (user) {
+        // user comes from authorize and is the DB row; copy first_name if present
+        (token as any).first_name = (user as any).first_name ?? (user as any).name?.split(/\s+/)[0];
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // expose first_name on session.user for easier access in the app
+      if (session?.user) {
+        (session.user as any).first_name = (token as any).first_name ?? session.user.name?.split(/\s+/)[0];
+      }
+      return session;
+    },
+  },
   providers: [
 Credentials({
   credentials: {

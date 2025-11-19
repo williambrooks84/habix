@@ -3,11 +3,14 @@
 import { useSession } from "next-auth/react";
 import Loading from "@/components/ui/loading";
 import HomeDisconnected from '@/components/home-disconnected';
-import { DivideIcon } from "@heroicons/react/24/outline";
+import NoHabit from "@/components/ui/habit/no-habit";
+import AddHabbitButton from "@/components/ui/habit/add-habit-button";
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const userName = session?.user?.name || session?.user?.email || "Anonymous";
+  const userName = (session?.user as any)?.first_name
+    ?? (session?.user?.name ? session.user.name.trim().split(/\s+/)[0] : undefined)
+    ?? (session?.user?.email ? session.user.email.split('@')[0] : 'Anonymous');
 
   if (status === "loading") {
     return <Loading />;
@@ -16,18 +19,15 @@ export default function Home() {
   return (
     <div>
       {session ? (
-        <main
-          className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start"
-          aria-labelledby="welcome-heading"
-        >
-          <article>
-            <h1 id="welcome-heading" className="text-3xl font-semibold">
-              Bienvenue, {userName}!
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Contenu personnalisé disponible une fois connecté.
-            </p>
-          </article>
+        <main className="w-full max-w-4xl mx-auto px-6 py-8 grid gap-8">
+          <h1 id="welcome-heading" className="text-2xl font-semibold">
+            Bienvenue, {userName}!
+          </h1>
+          <h2 className="text-lg text-foreground">Pensez à compléter vos habitudes du jour !</h2>
+          <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9">
+            <NoHabit />
+            <AddHabbitButton />
+          </section>
         </main>
       ) : (
         <HomeDisconnected />
@@ -37,7 +37,6 @@ export default function Home() {
         className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"
         role="contentinfo"
       >
-        {/* ... */}
       </footer>
     </div>
   );

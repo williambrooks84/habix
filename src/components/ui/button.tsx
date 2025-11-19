@@ -8,6 +8,7 @@ export function Button({ children, className, style, href, ...rest }: ButtonProp
 
   const variants: Record<string, string> = {
     primary: 'bg-primary text-foreground hover:opacity-95',
+    primaryOutline: 'bg-transparent border-2 border-primary text-primary hover:opacity-95 hover:text-foreground',
     transparent: 'bg-transparent hover:opacity-95',
   };
 
@@ -15,6 +16,7 @@ export function Button({ children, className, style, href, ...rest }: ButtonProp
     normal: 'h-12 px-4 text-xl font-semibold',
     small: 'h-8 px-8 py-3 justify-center items-center gap-1 text-sm',
     paddingless: 'p-0',
+    icon: 'p-3 gap-2 text-xl',
   };
 
   const base =

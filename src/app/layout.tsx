@@ -18,7 +18,9 @@ export default function RootLayout({
       <body className="antialiased">
         <SessionProviderWrapper>
           <Header />
-          {children}
+          <main className="mt-14 h-[calc(100vh-56px)]">
+            {children}
+          </main>
         </SessionProviderWrapper>
       </body>
     </html>

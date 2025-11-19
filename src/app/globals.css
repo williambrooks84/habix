@@ -13,7 +13,7 @@
   --color-input: var(--shadcn-input);
   --color-ring: var(--primary);
   --color-text: var(--text-color);
-  --color-button-text: var(--button-text-color);
+  --color-gray: var(--color-gray);
 
   /* shadcn naming */
   --color-destructive: var(--error);
@@ -23,8 +23,10 @@
 /* ===== CSS Variables ===== */
 :root {
   --error: #ef4444;
-  --button-text-color: #ffffff;
   --primary: #04D6AB;
+
+  /* Gray color available in both light and dark */
+  --color-gray: #A9A9A9;
 
   --background-light: #ffffff;
   --foreground-light: #0f172a;
@@ -47,7 +49,6 @@
 :root[data-theme="dark"],
 .dark {
   --error: #f87171;
-  --button-text-color: #000000;
 
   --background: var(--background-dark);
   --foreground: var(--foreground-dark);
@@ -56,13 +57,15 @@
   --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
   --shadcn-border: rgba(255, 255, 255, 0.12);
   --shadcn-input: rgba(255, 255, 255, 0.02);
+
+  /* Ensure color-gray is available in dark theme as well */
+  --color-gray: #A9A9A9;
 }
 
 /* ===== System Preference (only when NO data-theme is set) ===== */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --error: #f87171;
-    --button-text-color: #000000;
 
     --background: var(--background-dark);
     --foreground: var(--foreground-dark);
@@ -71,6 +74,9 @@
     --shadcn-muted-foreground: rgba(255, 255, 255, 0.6);
     --shadcn-border: rgba(255, 255, 255, 0.12);
     --shadcn-input: rgba(255, 255, 255, 0.02);
+
+    /* Ensure color-gray is available for system dark preference */
+    --color-gray: #A9A9A9;
   }
 }
 

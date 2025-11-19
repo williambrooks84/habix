@@ -5,8 +5,8 @@ export type LogosProps = {
 	size?: number;
 };
 
-export type ButtonVariant = 'primary' | 'transparent';
-export type ButtonSize = 'small' | 'normal' | 'paddingless';
+export type ButtonVariant = 'primary' | 'primaryOutline' | 'transparent';
+export type ButtonSize = 'small' | 'normal' | 'paddingless' | 'icon';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -40,4 +40,8 @@ export type MenuItemProps = {
   className?: string;
   href?: string;
   onClick?: () => void;
+};
+
+export type HomeConnectedProps = {
+    userName: string;
 };
