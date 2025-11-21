@@ -68,6 +68,36 @@ export type SimpleCategory = {
   name: string 
 };
 
+//Habit
+
 export type HabitFormProps = {
     categories: SimpleCategory[];
+};
+
+export type FormUIProps = {
+    id?: string;
+    name?: string;
+    value?: string;
+    defaultValue?: string;
+    onChange?: (value: string) => void;
+    placeholder?: string;
+    className?: string;
+};
+
+export type FormLabelProps = {
+    id?: string;
+    label: string;
+};
+
+export type HabitListItem = {
+  id: number | string;
+  name: string;
+  Icon?: React.ComponentType<{ className?: string }>;
+  subtitle?: string;
+  onClick?: (id: number | string) => void;
+};
+
+export type HabitProps = {
+  items: HabitListItem[];
+  className?: string;
 };

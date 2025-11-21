@@ -3,22 +3,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { CategoryProps, CategoryItem } from '@/types/ui';
-import {
-    HealthIcon,
-    LearningIcon,
-    ProductivityIcon,
-    ActivityIcon,
-} from '@/components/ui/icons';
-
-
-function pickIconByName(name: string) {
-    const n = name.toLowerCase();
-    if (n.includes('sant') || n.includes('health') || n.includes('santé')) return HealthIcon;
-    if (n.includes('learn') || n.includes('study') || n.includes('appr')) return LearningIcon;
-    if (n.includes('prod') || n.includes('work') || n.includes('task') || n.includes('tâche') || n.includes('travail')) return ProductivityIcon;
-    if (n.includes('sport') || n.includes('activité') || n.includes('move') || n.includes('activity')) return ActivityIcon;
-    return ActivityIcon;
-}
+import { pickIconByName } from '@/app/lib/pick-icon-by-name';
 
 export default function Categories({ items, categories, onSelect, className, selectedId = null }: CategoryProps) {
     const [localSelectedId, setLocalSelectedId] = React.useState<number | string | null>(selectedId ?? null);
@@ -32,16 +17,40 @@ export default function Categories({ items, categories, onSelect, className, sel
             id: c.id,
             label: c.name,
             Icon: pickIconByName(c.name),
-            // don't rely solely on this.selected — selection is derived at render time
         }));
     }, [items, categories]);
 
+    const itemRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
+    const [maxWidth, setMaxWidth] = React.useState<number | null>(null);
+
+    React.useEffect(() => {
+        function measure() {
+            const widths = resolved.map((it) => {
+                const el = itemRefs.current[String(it.id)];
+                return el ? el.offsetWidth : 0;
+            });
+            const mw = widths.length ? Math.max(...widths) : 0;
+            setMaxWidth(mw || null);
+        }
+
+        const id = window.requestAnimationFrame(() => measure());
+        const onResize = () => measure();
+        window.addEventListener('resize', onResize);
+
+        return () => {
+            window.cancelAnimationFrame(id);
+            window.removeEventListener('resize', onResize);
+        };
+    }, [resolved]);
+
      return (
-         <div className={clsx('flex flex-wrap gap-3', className)}>
+         <div
+             className={clsx('flex flex-wrap justify-center gap-6', className)}
+             style={maxWidth ? { ['--cat-min-w' as any]: `${maxWidth}px` } : undefined}
+         >
              {resolved.map((it) => {
                  const { id, label, Icon, selected } = it;
                  const ResolvedIcon = Icon ?? (() => <span className="w-5 h-5" />);
-                 // decide selection: prop-controlled selectedId takes precedence, otherwise local state
                  const isSelected = selectedId != null
                      ? String(selectedId) === String(id)
                      : localSelectedId != null && String(localSelectedId) === String(id);
@@ -55,14 +64,15 @@ export default function Categories({ items, categories, onSelect, className, sel
                          }}
                          aria-pressed={isSelected ? 'true' : 'false'}
                          className={clsx(
-                             'flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors focus:outline-none',
+                             'flex flex-col items-center gap-2 px-7 py-11 rounded-xl border-3 transition-colors focus:outline-none min-w-[var(--cat-min-w)]',
                              isSelected
-                                 ? 'bg-primary text-foreground border-primary'
+                                 ? 'text-foreground border-primary'
                                  : 'bg-transparent text-foreground border-grey'
                          )}
+                         ref={(el) => { itemRefs.current[String(id)] = el; }}
                      >
                          <ResolvedIcon className="w-5 h-5" />
-                         <span className="text-sm font-medium">{label}</span>
+                         <span className="text-base font-medium">{label}</span>
                      </button>
                  );
              })}

@@ -1,5 +1,5 @@
 import sql from './database'
-import { Habit } from '@/types/definitions'
+import { Habit } from './definitions'
 
 export async function getHabitsByUser(userId: number): Promise<Habit[]> {
   return (await sql`

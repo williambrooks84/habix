@@ -5,7 +5,6 @@ const sql = neon(process.env.DATABASE_URL!);
 
 export default sql;
 
-// Helper to convert database row to UserResponse (removes password)
 export function toUserResponse(row: any): UserResponse {
   return {
     id: row.id,

@@ -1,5 +1,5 @@
 import sql from './database'
-import { Category } from '@/types/definitions'
+import { Category } from './definitions'
 
 export async function getAllCategories(): Promise<Category[]> {
   const rows = await sql`

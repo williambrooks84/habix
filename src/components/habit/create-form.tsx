@@ -5,14 +5,10 @@ import { useRouter } from "next/navigation";
 import FormUI from "@/components/ui/habit/form-ui";
 import Categories from "@/components/ui/habit/categories";
 import { Button } from "@/components/ui/button";
+import FormLabel from "@/components/ui/habit/form-label";
+import { HabitFormProps } from "@/types/ui";
 
-export type SimpleCategory = { id: number; name: string };
-
-type Props = {
-    categories: SimpleCategory[];
-};
-
-export default function CreateHabitForm({ categories }: Props) {
+export default function CreateHabitForm({ categories }: HabitFormProps) {
     const router = useRouter();
     const [name, setName] = React.useState("");
     const [categoryId, setCategoryId] = React.useState<number | null>(null);
@@ -55,7 +51,6 @@ export default function CreateHabitForm({ categories }: Props) {
             setName("");
             setCategoryId(null);
 
-            // navigate back to main page
             router.push("/");
         } catch (err: any) {
             setError(err?.message ?? "Erreur lors de la création");
@@ -65,7 +60,7 @@ export default function CreateHabitForm({ categories }: Props) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6" aria-label="Créer une habitude">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-10" aria-label="Créer une habitude">
             <FormUI
                 name="name"
                 value={name}
@@ -76,10 +71,8 @@ export default function CreateHabitForm({ categories }: Props) {
                 placeholder="Quelle est votre habitude en ce moment ?"
             />
 
-            <div>
-                <label className="text-sm mb-2 block">
-                    Catégorie
-                </label>
+            <div className="flex flex-col gap-4">
+                <FormLabel id="category" label="Catégorie" />
 
                 <div
                     aria-required="true"
@@ -110,8 +103,7 @@ export default function CreateHabitForm({ categories }: Props) {
             )}
             {success && <p className="text-sm text-success">Habitude créée.</p>}
 
-            <div>
-                {/* enable submit so validation runs; only disable while loading */}
+            <div className="flex justify-center">
                 <Button type="submit" disabled={loading}>
                     {loading ? "Création..." : "Créer l'habitude"}
                 </Button>
