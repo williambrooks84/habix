@@ -1,0 +1,83 @@
+import sql from './database'
+import { Habit } from '@/types/definitions'
+
+export async function getHabitsByUser(userId: number): Promise<Habit[]> {
+  return (await sql`
+    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
+    FROM habits
+    WHERE user_id = ${userId}
+    ORDER BY created_at DESC
+  `).map((r:any) => ({
+    id: r.id,
+    name: r.name,
+    categoryId: r.category_id,
+    userId: r.user_id,
+    motivation: r.motivation,
+    periodStart: r.period_start,
+    periodEnd: r.period_end,
+    frequency: r.frequency,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }))
+}
+
+export async function getHabitById(id: number): Promise<Habit | null> {
+  const rows = await sql`
+    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
+    FROM habits
+    WHERE id = ${id}
+    LIMIT 1
+  `
+  if (!rows || rows.length === 0) return null
+  const r = rows[0]
+  return {
+    id: r.id,
+    name: r.name,
+    categoryId: r.category_id,
+    userId: r.user_id,
+    motivation: r.motivation,
+    periodStart: r.period_start,
+    periodEnd: r.period_end,
+    frequency: r.frequency,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }
+}
+
+export async function createHabit(input: {
+  name: string;
+  categoryId?: number | null;
+  userId?: number | null;
+  periodStart?: Date | null;
+  periodEnd?: Date | null;
+  frequency?: string | null;
+}): Promise<Habit> {
+  const rows = await sql`
+    INSERT INTO habits (name, category_id, user_id)
+    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null})
+    RETURNING id, name, category_id, user_id, created_at, updated_at
+  `
+  const r = rows[0]
+  return {
+    id: r.id,
+    name: r.name,
+    categoryId: r.category_id,
+    userId: r.user_id,
+    motivation: r.motivation,
+    periodStart: r.period_start,
+    periodEnd: r.period_end,
+    frequency: r.frequency,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }
+}
+
+export async function deleteHabit(id: number, userId?: number): Promise<boolean> {
+  if (userId) {
+    const res = await sql`DELETE FROM habits WHERE id = ${id} AND user_id = ${userId} RETURNING id`
+    return res.length > 0
+  } else {
+    const res = await sql`DELETE FROM habits WHERE id = ${id} RETURNING id`
+    return res.length > 0
+  }
+}

@@ -1,30 +1,41 @@
-import prisma from './prisma'
+import sql from '../src/app/lib/database'
 import type { User as UserDef } from '../src/app/lib/definitions'
 import * as bcrypt from 'bcryptjs'
 
 export async function getUsers(): Promise<UserDef[]> {
-  const users = await prisma.user.findMany({ orderBy: { id: 'desc' } })
-  return users.map((u: any) => ({
+  const rows = await sql`
+    SELECT id, created_at, email, password_hash, first_name, last_name
+    FROM users
+    ORDER BY id DESC
+  `
+
+  return rows.map((u: any) => ({
     id: String(u.id),
-    createdAt: u.createdAt,
+    createdAt: u.created_at,
     email: u.email,
-    password: u.password,
-    firstName: u.firstName,
-    lastName: u.lastName,
+    password: u.password_hash,
+    firstName: u.first_name,
+    lastName: u.last_name,
   }))
 }
 
 export async function getUserById(id: number | string): Promise<UserDef | null> {
   const uid = typeof id === 'string' ? parseInt(id, 10) : id
-  const u = await prisma.user.findUnique({ where: { id: uid } })
-  if (!u) return null
+  const rows = await sql`
+    SELECT id, created_at, email, password_hash, first_name, last_name
+    FROM users
+    WHERE id = ${uid}
+    LIMIT 1
+  `
+  if (rows.length === 0) return null
+  const u = rows[0]
   return {
     id: String(u.id),
-    createdAt: u.createdAt,
+    createdAt: u.created_at,
     email: u.email,
-    password: u.password,
-    firstName: u.firstName,
-    lastName: u.lastName,
+    password: u.password_hash,
+    firstName: u.first_name,
+    lastName: u.last_name,
   }
 }
 
@@ -37,21 +48,19 @@ export async function createUser(data: {
   // hash the password before storing
   const hashedPassword = bcrypt.hashSync(data.password, 10)
 
-  const u = await prisma.user.create({
-    data: {
-      email: data.email,
-      password: hashedPassword,
-      firstName: data.firstName ?? "",
-      lastName: data.lastName ?? "",
-    }
-  })
+  const rows = await sql`
+    INSERT INTO users (email, password_hash, first_name, last_name)
+    VALUES (${data.email}, ${hashedPassword}, ${data.firstName ?? ''}, ${data.lastName ?? ''})
+    RETURNING id, created_at, email, password_hash, first_name, last_name
+  `
 
+  const u = rows[0]
   return {
     id: String(u.id),
-    createdAt: u.createdAt,
+    createdAt: u.created_at,
     email: u.email,
-    password: u.password,
-    firstName: u.firstName,
-    lastName: u.lastName,
+    password: u.password_hash,
+    firstName: u.first_name,
+    lastName: u.last_name,
   }
 }

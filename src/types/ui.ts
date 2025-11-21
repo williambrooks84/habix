@@ -45,3 +45,29 @@ export type MenuItemProps = {
 export type HomeConnectedProps = {
     userName: string;
 };
+
+//Categories
+export type CategoryItem = {
+    id: number | string;
+    label: string;
+    Icon: React.ComponentType<{ className?: string }>;
+    selected?: boolean;
+};
+
+export type CategoryProps = {
+    items?: CategoryItem[];
+    categories?: SimpleCategory[];
+    onSelect?: (id: number | string) => void;
+    className?: string;
+    selectedId?: number | string | null;
+};
+
+
+export type SimpleCategory = { 
+  id: number; 
+  name: string 
+};
+
+export type HabitFormProps = {
+    categories: SimpleCategory[];
+};

@@ -1,43 +1,102 @@
 'use client';
 
-import { useSession } from "next-auth/react";
-import Loading from "@/components/ui/loading";
+import React from 'react';
+import { useSession } from 'next-auth/react';
+import Loading from '@/components/ui/loading';
 import HomeDisconnected from '@/components/home-disconnected';
-import NoHabit from "@/components/ui/habit/no-habit";
-import AddHabbitButton from "@/components/ui/habit/add-habit-button";
+import NoHabit from '@/components/ui/habit/no-habit';
+import AddHabbitButton from '@/components/ui/habit/add-habit-button';
+import HabitList from '@/components/habit/habit-list';
+import {
+  HealthIcon,
+  LearningIcon,
+  ProductivityIcon,
+  ActivityIcon,
+} from '@/components/ui/icons';
+
+function pickIconByName(name: string) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('sant') || n.includes('health') || n.includes('santé')) return HealthIcon;
+  if (n.includes('learn') || n.includes('study') || n.includes('appr')) return LearningIcon;
+  if (n.includes('prod') || n.includes('work') || n.includes('task') || n.includes('tâche') || n.includes('travail')) return ProductivityIcon;
+  if (n.includes('sport') || n.includes('activité') || n.includes('move') || n.includes('activity')) return ActivityIcon;
+  return ActivityIcon;
+}
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const [loadingHabits, setLoadingHabits] = React.useState(false);
+  const [habits, setHabits] = React.useState<any[] | null>(null);
+
   const userName = (session?.user as any)?.first_name
     ?? (session?.user?.name ? session.user.name.trim().split(/\s+/)[0] : undefined)
     ?? (session?.user?.email ? session.user.email.split('@')[0] : 'Anonymous');
 
-  if (status === "loading") {
-    return <Loading />;
-  }
+  React.useEffect(() => {
+    if (!session) return;
+    let mounted = true;
+    async function load() {
+      setLoadingHabits(true);
+      try {
+        const res = await fetch('/api/habits', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const body = await res.json();
+        if (!mounted) return;
+        setHabits(body.habits ?? []);
+      } catch {
+        if (!mounted) return;
+        setHabits([]);
+      } finally {
+        if (mounted) setLoadingHabits(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, [session]);
+
+  if (status === 'loading') return <Loading />;
+
+  if (!session) return <HomeDisconnected />;
+
+  if (loadingHabits) return <Loading />;
+
+  const hasHabits = Array.isArray(habits) && habits.length > 0;
 
   return (
     <div>
-      {session ? (
-        <main className="w-full max-w-4xl mx-auto px-6 py-8 grid gap-8">
-          <h1 id="welcome-heading" className="text-2xl font-semibold">
-            Bienvenue, {userName}!
-          </h1>
-          <h2 className="text-lg text-foreground">Pensez à compléter vos habitudes du jour !</h2>
-          <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9">
-            <NoHabit />
-            <AddHabbitButton />
-          </section>
-        </main>
-      ) : (
-        <HomeDisconnected />
-      )}
+      <main className="w-full max-w-4xl mx-auto px-6 py-8 grid gap-8">
+        <h1 id="welcome-heading" className="text-2xl font-semibold">
+          Bienvenue, {userName}!
+        </h1>
+        <h2 className="text-lg text-foreground">Pensez à compléter vos habitudes du jour !</h2>
+
+        <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9">
+          {hasHabits ? (
+            <>
+              <HabitList
+                items={habits.map((h: any) => ({
+                  id: h.id,
+                  name: h.name,
+                  Icon: pickIconByName(h.category?.name ?? ''),
+                  subtitle: h.category?.name ?? undefined,
+                  onClick: () => {}, 
+                }))}
+              />
+              <AddHabbitButton />
+            </>
+          ) : (
+            <>
+              <NoHabit />
+              <AddHabbitButton />
+            </>
+          )}
+        </section>
+      </main>
 
       <footer
-        className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"
+        className="row-start-3 flex gap-6 flex-wrap items-center justify-center"
         role="contentinfo"
-      >
-      </footer>
+      />
     </div>
   );
 }

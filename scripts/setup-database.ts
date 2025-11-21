@@ -65,7 +65,7 @@ async function setupDatabase() {
     // Default categories
     await sql`
       INSERT INTO categories (name) VALUES
-        ('Santé'), ('Productivité'), ('Loisirs'), ('Apprentissage'), ('Bien-être')
+        ('Santé'), ('Productivité'), ('Loisirs'), ('Apprentissage')
       ON CONFLICT (name) DO NOTHING
     `;
 
