@@ -40,20 +40,18 @@ export default function LoginForm() {
 
     if (emailErr) return;
 
+    // Use a full redirect so the authentication cookie is set by the
+    // server response (more reliable in deployed environments).
     setIsPending(true);
-    const res = await signIn('credentials', {
-      redirect: false,
+    // Default `redirect` for next-auth `signIn` is `true` — we don't await
+    // because the browser will navigate on success and this code won't continue.
+    // Provide `callbackUrl` so the user returns to the correct page.
+    signIn('credentials', {
       email: form.email,
       password: form.password,
+      callbackUrl: callbackUrl || '/',
     });
-    setIsPending(false);
-
-    if (res?.ok) {
-      router.push(callbackUrl || '/');
-    } else {
-      setAuthError("L'adresse mail ou mot de passe est incorrect");
-      setErrors(prev => ({ ...prev, email: prev.email ?? ' ', password: prev.password ?? ' ' }));
-    }
+    // Note: we don't set isPending false here because the page will navigate.
   }
 
   return (
