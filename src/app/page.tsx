@@ -38,7 +38,7 @@ export default function Home() {
     async function load() {
       setLoadingHabits(true);
       try {
-        const res = await fetch('/api/habits', { credentials: 'same-origin' });
+        const res = await fetch('/api/habits', { credentials: 'include' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         if (!mounted) return;

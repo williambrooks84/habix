@@ -41,7 +41,7 @@ export default function CreateHabitForm({ categories }: Props) {
         try {
             const res = await fetch("/api/habits/create", {
                 method: "POST",
-                credentials: "same-origin",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: name.trim(), categoryId }),
             });
