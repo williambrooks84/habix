@@ -6,12 +6,14 @@ import FormUI from "@/components/ui/habit/form-ui";
 import Categories from "@/components/ui/habit/categories";
 import { Button } from "@/components/ui/button";
 import FormLabel from "@/components/ui/habit/form-label";
+import FormField from "../ui/habit/form-field";
 import { HabitFormProps } from "@/types/ui";
 
 export default function CreateHabitForm({ categories }: HabitFormProps) {
     const router = useRouter();
     const [name, setName] = React.useState("");
     const [categoryId, setCategoryId] = React.useState<number | null>(null);
+    const [motivation, setMotivation] = React.useState("");
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
     const [categoryError, setCategoryError] = React.useState<string | null>(null);
@@ -39,7 +41,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), categoryId }),
+                body: JSON.stringify({ name: name.trim(), categoryId, motivation }),
             });
 
             if (!res.ok) {
@@ -49,6 +51,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
 
             setSuccess(true);
             setName("");
+            setMotivation("");
             setCategoryId(null);
 
             router.push("/");
@@ -94,6 +97,17 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                         {categoryError}
                     </p>
                 )}
+            </div>
+            <div>
+                <FormField
+                    name="motivation"
+                    value={motivation}
+                    onChange={(v) => {
+                        setMotivation(v);
+                        if (error) setError(null);
+                    }}
+                    placeholder="Quelle est votre motivation ?"
+                />
             </div>
 
             {error && (

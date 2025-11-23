@@ -47,15 +47,16 @@ export async function getHabitById(id: number): Promise<Habit | null> {
 export async function createHabit(input: {
   name: string;
   categoryId?: number | null;
+  motivation?: string | null;
   userId?: number | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
   frequency?: string | null;
 }): Promise<Habit> {
   const rows = await sql`
-    INSERT INTO habits (name, category_id, user_id)
-    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null})
-    RETURNING id, name, category_id, user_id, created_at, updated_at
+    INSERT INTO habits (name, category_id, user_id, motivation)
+    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null})
+    RETURNING id, name, category_id, user_id, motivation, created_at, updated_at
   `
   const r = rows[0]
   return {

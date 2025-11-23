@@ -7,14 +7,12 @@ export default async function CreateHabitPage() {
     const categories = await getAllCategories();
 
     return (
-        <main>
-            <div className="flex flex-col px-6">
-                <h1 className="text-2xl font-semibold text-foreground">Créer une habitude</h1>
+        <div className="flex flex-col px-6">
+            <h1 className="text-2xl font-semibold text-foreground">Créer une habitude</h1>
 
-                <section className="mt-6">
-                    <CreateHabitForm categories={categories} />
-                </section>
-            </div>
-        </main>
+            <section className="mt-6">
+                <CreateHabitForm categories={categories} />
+            </section>
+        </div>
     );
 }

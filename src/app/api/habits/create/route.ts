@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const name = body?.name;
     const categoryId = body?.categoryId ?? null;
+    const motivation = body?.motivation ?? "";
 
     if (!name || typeof name !== 'string') {
       return Response.json({ error: 'Invalid or missing `name`' }, { status: 400 });
@@ -16,7 +17,6 @@ export async function POST(request: Request) {
       return Response.json({ error: '`categoryId` must be a number or null' }, { status: 400 });
     }
 
-    // Validate authentication via next-auth token
     const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
     if (!token) {
       return Response.json({ error: 'Not authenticated' }, { status: 401 });
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const habit = await createHabit({ name, categoryId, userId });
+    const habit = await createHabit({ name, categoryId, motivation,  userId });
     return Response.json({ habit });
   } catch (error) {
     console.error('Create habit error:', error);
