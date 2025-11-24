@@ -94,6 +94,7 @@ export type HabitListItem = {
   name: string;
   Icon?: React.ComponentType<{ className?: string }>;
   subtitle?: string;
+  motivation?: string;
   onClick?: (id: number | string) => void;
 };
 

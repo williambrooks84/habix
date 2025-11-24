@@ -66,6 +66,7 @@ export default function Home() {
                   Icon: pickIconByName(h.category?.name ?? ''),
                   subtitle: h.category?.name ?? undefined,
                   onClick: () => {}, 
+                  motivation: h.motivation,
                 }))}
               />
               <AddHabbitButton />

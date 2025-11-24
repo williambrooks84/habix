@@ -21,6 +21,7 @@ export default function HabitList({ items, className }: HabitProps) {
               <span className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-foreground truncate">{item.name}</div>
                 {item.subtitle && <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>}
+                <p>{item.motivation}</p>
               </span>
             </div>
           </li>
