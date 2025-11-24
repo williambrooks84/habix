@@ -26,7 +26,7 @@ export default function ThemeToggle() {
       className="rounded-md p-2 hover:bg-muted/10"
       title={theme === "dark" ? "Passer en clair" : "Passer en sombre"}
     >
-      {theme === "dark" ? <LightIcon /> : <DarkIcon />}
+      {theme === "dark" ? <DarkIcon /> : <LightIcon />}
     </button>
   );
 }

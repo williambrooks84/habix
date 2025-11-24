@@ -4,7 +4,7 @@ import { MenuOverlayProps } from "@/types/ui";
 import MenuItem from '@/components/ui/menu/menu-item';
 import ThemeToggle from '@/components/ui/theme-toggle/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { CrossIcon, LoginIcon, LogoutIcon } from '@/components/ui/icons';
+import { CrossIcon, LoginIcon, LogoutIcon, HomeIcon, HabitsIcon, CalendarIcon } from '@/components/ui/icons';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,24 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
 
     const [visible, setVisible] = useState(open);
     const [active, setActive] = useState(false);
+
+    const navItems = [
+        {
+            label: 'Accueil',
+            icon: HomeIcon,
+            onClick: () => router.push('/'),
+        }, /*
+        {
+            label: 'Habitudes',
+            icon: HabitsIcon,
+            onClick: () => router.push('/habits'),
+        },
+        {
+            label: 'Calendrier',
+            icon: CalendarIcon,
+            onClick: () => router.push('/calendar'),
+        }*/
+    ]
 
     useEffect(() => {
         let enterTimer: number | undefined;
@@ -29,7 +47,7 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
         }
 
         setActive(false);
-        const t = window.setTimeout(() => setVisible(false), 240); 
+        const t = window.setTimeout(() => setVisible(false), 240);
         return () => clearTimeout(t);
     }, [open]);
 
@@ -85,6 +103,18 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                             <CrossIcon />
                         </Button>
                     </MenuItem>
+
+                     {navItems.map((item, idx) => {
+                        const Icon = item.icon;
+                        return (
+                            <MenuItem key={idx}>
+                                <Button variant="transparent" size="nav" onClick={wrapAndClose(item.onClick)}>
+                                    {Icon ? <Icon /> : null}
+                                    <span className="">{item.label}</span>
+                                </Button>
+                            </MenuItem>
+                        );
+                    })}
 
                     {session?.user ? (
                         <MenuItem>

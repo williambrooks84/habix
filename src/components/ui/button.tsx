@@ -13,14 +13,15 @@ export function Button({ children, className, style, href, ...rest }: ButtonProp
   };
 
   const sizes: Record<string, string> = {
-    normal: 'h-12 px-4 text-xl font-semibold',
+    normal: 'h-12 px-4 justify-center text-xl font-semibold',
     small: 'h-8 px-8 py-3 justify-center items-center gap-1 text-sm',
     paddingless: 'p-0',
-    icon: 'p-3 gap-2 text-xl',
+    icon: 'p-3 gap-2 justify-center text-xl',
+    nav: 'flex flex-row px-3 text-base justify-between w-full',
   };
 
   const base =
-    'flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-primary aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
+    'flex items-center rounded-full font-medium transition-colors focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-primary aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
 
   const { variant = 'primary', size = 'normal', ...buttonProps } = rest as any;
 

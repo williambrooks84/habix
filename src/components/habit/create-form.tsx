@@ -65,6 +65,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-10" aria-label="Créer une habitude">
             <FormUI
+                id="name"
                 name="name"
                 value={name}
                 onChange={(v) => {
@@ -83,6 +84,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                     aria-describedby={categoryError ? "category-error" : undefined}
                 >
                     <Categories
+                        id="category"
                         categories={categories}
                         selectedId={categoryId}
                         onSelect={(id) => {
@@ -100,6 +102,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
             </div>
             <div>
                 <FormField
+                    id="motivation"
                     name="motivation"
                     value={motivation}
                     onChange={(v) => {

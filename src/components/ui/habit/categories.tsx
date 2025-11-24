@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { CategoryProps, CategoryItem } from '@/types/ui';
 import { pickIconByName } from '@/app/lib/pick-icon-by-name';
 
-export default function Categories({ items, categories, onSelect, className, selectedId = null }: CategoryProps) {
+export default function Categories({ items, categories, onSelect, className, selectedId = null, id }: CategoryProps) {
     const [localSelectedId, setLocalSelectedId] = React.useState<number | string | null>(selectedId ?? null);
     React.useEffect(() => {
         setLocalSelectedId(selectedId ?? null);
@@ -45,6 +45,7 @@ export default function Categories({ items, categories, onSelect, className, sel
 
      return (
          <div
+             id={id}
              className={clsx('flex flex-wrap justify-center gap-6', className)}
              style={maxWidth ? { ['--cat-min-w' as any]: `${maxWidth}px` } : undefined}
          >
