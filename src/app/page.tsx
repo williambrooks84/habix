@@ -50,7 +50,7 @@ export default function Home() {
 
   return (
     <div>
-      <main className="w-full max-w-4xl mx-auto px-6 py-8 grid gap-8">
+      <main className="w-full mx-auto px-6 py-8 grid gap-8">
         <h1 id="welcome-heading" className="text-2xl font-semibold">
           Bienvenue, {userName}!
         </h1>

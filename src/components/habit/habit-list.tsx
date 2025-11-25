@@ -67,7 +67,7 @@ export default function HabitList({ items, className }: HabitProps) {
 
           return (
             <li key={String(item.id)}>
-              <div className="w-full flex items-center justify-between gap-3 p-3">
+              <div className="w-full flex items-center justify-betweenp-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <span className="flex-shrink-0">
                     <Icon className="w-6 h-6" />
@@ -104,8 +104,7 @@ export default function HabitList({ items, className }: HabitProps) {
                   </span>
                 </div>
 
-                {/* Delete button on the right */}
-                <div className="flex-shrink-0 ml-2">
+                <div className="flex-shrink-0">
                   <button
                     type="button"
                     aria-label="Supprimer l'habitude"
