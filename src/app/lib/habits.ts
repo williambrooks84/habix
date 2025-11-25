@@ -77,12 +77,7 @@ export async function createHabit(input: {
   }
 }
 
-export async function deleteHabit(id: number, userId?: number): Promise<boolean> {
-  if (userId) {
-    const res = await sql`DELETE FROM habits WHERE id = ${id} AND user_id = ${userId} RETURNING id`
-    return res.length > 0
-  } else {
+export async function deleteHabit(id: number): Promise<boolean> {
     const res = await sql`DELETE FROM habits WHERE id = ${id} RETURNING id`
     return res.length > 0
-  }
 }
