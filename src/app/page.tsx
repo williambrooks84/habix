@@ -67,6 +67,8 @@ export default function Home() {
                   subtitle: h.category?.name ?? undefined,
                   onClick: () => {}, 
                   motivation: h.motivation,
+                  periodStart: h.periodStart ?? null,
+                  periodEnd: h.periodEnd ?? null,
                 }))}
               />
               <AddHabbitButton />
