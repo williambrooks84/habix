@@ -136,6 +136,35 @@ async function setupDatabase() {
   //drop frequency column
   await sql`ALTER TABLE habits DROP COLUMN IF EXISTS frequency`;
 
+  // Create habit_runs table to track per-day completions
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS habit_runs (
+        id SERIAL PRIMARY KEY,
+        habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        run_date DATE NOT NULL,
+        completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        notes TEXT,
+        UNIQUE(habit_id, run_date)
+      )
+    `;
+
+    // Helpful index for queries by date
+    await sql`CREATE INDEX IF NOT EXISTS idx_habit_runs_run_date ON habit_runs (run_date)`;
+
+    // Ensure created_at exists for compatibility with RETURNING clauses
+    await sql`
+      ALTER TABLE habit_runs
+        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    `;
+
+    console.log('✅ habit_runs table created (or already exists)');
+  } catch (err) {
+    console.error('❌ Error creating habit_runs table:', err);
+    process.exit(1);
+  }
+
   console.log('✅ Legacy frequency columns dropped if they existed');
 }
 

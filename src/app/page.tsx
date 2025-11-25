@@ -8,6 +8,7 @@ import NoHabit from '@/components/ui/habit/no-habit';
 import AddHabbitButton from '@/components/ui/habit/add-habit-button';
 import HabitList from '@/components/habit/habit-list';
 import { pickIconByName } from './lib/pick-icon-by-name';
+import TodayHabits from '@/components/habit/today-habits';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -59,6 +60,7 @@ export default function Home() {
         <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9">
           {hasHabits ? (
             <>
+              <TodayHabits />
               <HabitList
                 items={habits.map((h: any) => ({
                   id: h.id,
