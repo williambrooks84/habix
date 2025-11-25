@@ -10,6 +10,8 @@ export async function POST(request: Request) {
     const motivation = body?.motivation ?? "";
     const periodStart = body?.periodStart ? new Date(body.periodStart) : null;
     const periodEnd = body?.periodEnd ? new Date(body.periodEnd) : null;
+    const frequencyType = body?.frequency_type ?? null;
+    const frequencyConfig = body?.frequency_config ?? null;
 
     if (!name || typeof name !== 'string') {
       return Response.json({ error: 'Invalid or missing `name`' }, { status: 400 });
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const habit = await createHabit({ name, categoryId, motivation,  userId, periodStart, periodEnd });
+    const habit = await createHabit({ name, categoryId, motivation, userId, periodStart, periodEnd, frequencyType, frequencyConfig });
     return Response.json({ habit });
   } catch (error) {
     console.error('Create habit error:', error);

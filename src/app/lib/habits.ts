@@ -3,7 +3,7 @@ import { Habit } from './definitions'
 
 export async function getHabitsByUser(userId: number): Promise<Habit[]> {
   return (await sql`
-    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
+    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
     FROM habits
     WHERE user_id = ${userId}
     ORDER BY created_at DESC
@@ -15,7 +15,8 @@ export async function getHabitsByUser(userId: number): Promise<Habit[]> {
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,
-    frequency: r.frequency,
+    frequencyType: r.frequency_type,
+    frequencyConfig: r.frequency_config,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   }))
@@ -23,7 +24,7 @@ export async function getHabitsByUser(userId: number): Promise<Habit[]> {
 
 export async function getHabitById(id: number): Promise<Habit | null> {
   const rows = await sql`
-    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
+    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
     FROM habits
     WHERE id = ${id}
     LIMIT 1
@@ -38,7 +39,8 @@ export async function getHabitById(id: number): Promise<Habit | null> {
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,
-    frequency: r.frequency,
+    frequencyType: r.frequency_type,
+    frequencyConfig: r.frequency_config,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   }
@@ -51,12 +53,13 @@ export async function createHabit(input: {
   userId?: number | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
-  frequency?: string | null;
+  frequencyType?: string | null;
+  frequencyConfig?: string | null;
 }): Promise<Habit> {
   const rows = await sql`
-    INSERT INTO habits (name, category_id, user_id, motivation, period_start, period_end)
-    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null}, ${input.periodStart ?? null}, ${input.periodEnd ?? null})
-    RETURNING id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
+    INSERT INTO habits (name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config)
+    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null}, ${input.periodStart ?? null}, ${input.periodEnd ?? null}, ${input.frequencyType ?? null}, ${input.frequencyConfig ?? null})
+    RETURNING id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
   `
   const r = rows[0]
   return {
@@ -67,7 +70,8 @@ export async function createHabit(input: {
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,
-    frequency: r.frequency,
+    frequencyType: r.frequency_type,
+    frequencyConfig: r.frequency_config,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   }

@@ -81,7 +81,9 @@ async function setupDatabase() {
         motivation TEXT,
         period_start TIMESTAMP WITH TIME ZONE,
         period_end TIMESTAMP WITH TIME ZONE,
-        frequency VARCHAR(50),
+        frequency_type VARCHAR(50),
+        frequency_config JSONB,
+        next_run TIMESTAMPTZ,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
@@ -89,10 +91,52 @@ async function setupDatabase() {
 
     console.log('✅ Habits table created (or already exists)');
 
+    // Ensure new columns exist (add them when table already existed)
+    await sql`
+      ALTER TABLE habits
+        ADD COLUMN IF NOT EXISTS frequency_type VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS frequency_config JSONB,
+        ADD COLUMN IF NOT EXISTS next_run TIMESTAMPTZ
+    `;
+
+    // Detect which source column exists ("frequence" or "frequency") and backfill accordingly
+
+    const hasFrequency = (await sql`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'habits' AND column_name = 'frequency'
+      ) AS exists
+    `)[0]?.exists;
+
+    if (hasFrequency) {
+      await sql`
+        UPDATE habits
+        SET frequency_type = CASE
+          WHEN lower(coalesce(frequency,'')) LIKE '%tous les jours%' THEN 'daily'
+          WHEN lower(coalesce(frequency,'')) LIKE '%1 fois par semaine%' OR lower(coalesce(frequency,'')) LIKE '%une fois par semaine%' THEN 'weekly'
+          WHEN lower(coalesce(frequency,'')) LIKE '%plusieurs fois par semaine%' THEN 'weekly-multi'
+          WHEN lower(coalesce(frequency,'')) LIKE '%1 fois par mois%' OR lower(coalesce(frequency,'')) LIKE '%une fois par mois%' THEN 'monthly'
+          WHEN lower(coalesce(frequency,'')) LIKE '%plusieurs fois par mois%' THEN 'monthly-multi'
+          ELSE 'custom'
+        END
+        WHERE frequency_type IS NULL AND frequency IS NOT NULL
+      `;
+      console.log('✅ Habits table backfilled from "frequency" column');
+    } else {
+      console.log('ℹ️ No source frequency column ("frequence" or "frequency") found — skipping backfill');
+    }
+
+    console.log('✅ Habits table backfilled successfully!');
+
   } catch (error) {
     console.error('❌ Error creating tables:', error);
     process.exit(1);
   }
+
+  //drop frequency column
+  await sql`ALTER TABLE habits DROP COLUMN IF EXISTS frequency`;
+
+  console.log('✅ Legacy frequency columns dropped if they existed');
 }
 
 setupDatabase();

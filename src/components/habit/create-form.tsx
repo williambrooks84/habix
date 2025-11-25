@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FormUI from "@/components/ui/habit/form-ui";
 import Categories from "@/components/ui/habit/categories";
@@ -9,8 +9,10 @@ import FormLabel from "@/components/ui/habit/form-label";
 import FormField from "../ui/habit/form-field";
 import { HabitFormProps } from "@/types/ui";
 import DatePicker from "@/components/ui/habit/date-picker";
+import FrequencySelect from "@/components/ui/habit/frequency";
+import type { FrequencyType, FrequencyConfig } from "@/app/types";
 
-export default function CreateHabitForm({ categories }: HabitFormProps) {
+export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
     const router = useRouter();
     const [name, setName] = React.useState("");
     const [categoryId, setCategoryId] = React.useState<number | null>(null);
@@ -21,6 +23,22 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
     const [success, setSuccess] = React.useState(false);
     const [startDate, setStartDate] = React.useState<string | null>(null);
     const [endDate, setEndDate] = React.useState<string | null>(null);
+
+    // frequency state (use string literal defaults because FrequencyType is a type-only definition)
+    const [frequency, setFrequency] = useState<{ type: FrequencyType; config?: FrequencyConfig }>(
+        {
+            type: "daily" as FrequencyType,
+            config: { interval: 1 },
+        }
+    );
+
+    // init from habit when editing (use only frequencyType / frequencyConfig, no legacy 'frequency')
+    useEffect(() => {
+        if (!habit) return;
+        const type = (habit.frequencyType as FrequencyType) ?? "daily";
+        const config = (habit.frequencyConfig ?? undefined) as FrequencyConfig | undefined;
+        setFrequency({ type, config });
+    }, [habit]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -44,7 +62,15 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), categoryId, motivation, periodStart: startDate, periodEnd: endDate }),
+                body: JSON.stringify({
+                    name: name.trim(),
+                    categoryId,
+                    motivation,
+                    periodStart: startDate,
+                    periodEnd: endDate,
+                    frequency_type: frequency.type,
+                    frequency_config: frequency.config ?? null,
+                }),
             });
 
             if (!res.ok) {
@@ -56,6 +82,8 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
             setName("");
             setMotivation("");
             setCategoryId(null);
+            // reset frequency to default if desired:
+            setFrequency({ type: "daily", config: { interval: 1 } });
 
             router.push("/");
         } catch (err: any) {
@@ -115,6 +143,9 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                     placeholder="Quelle est votre motivation ?"
                 />
             </div>
+            <div className="mb-4">
+                <FrequencySelect value={frequency} onChange={setFrequency} />
+            </div>
             <div>
                 <DatePicker
                     startDate={startDate}
@@ -123,6 +154,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                     label="Période"
                 />
             </div>
+
 
             {error && (
                 <p role="alert" className="text-sm text-destructive">

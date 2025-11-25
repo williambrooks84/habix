@@ -15,7 +15,8 @@ export type Habit = {
   motivation?: string | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
-  frequency?: string | null;
+  frequencyType?: string | null;
+  frequencyConfig?: any | null;
   createdAt: Date;
   updatedAt: Date;
 }

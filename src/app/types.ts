@@ -27,3 +27,16 @@ export interface LoginInput {
   email: string;
   password: string;
 }
+
+export type FrequencyType =
+  | 'daily'
+  | 'weekly'
+  | 'weekly-multi'
+  | 'monthly'
+  | 'monthly-multi';
+
+export type FrequencyConfig =
+  | { } 
+  | { interval?: number }
+  | { days?: number[] }
+  | { dayOfMonth?: number } 

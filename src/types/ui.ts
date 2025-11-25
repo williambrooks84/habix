@@ -71,8 +71,22 @@ export type SimpleCategory = {
 
 //Habit
 
+export type Habit = {
+  id?: number | string;
+  name: string;
+  categoryId?: number | null;
+  motivation?: string | null;
+  periodStart?: string | null;
+  periodEnd?: string | null;
+  frequencyType?: string | null;
+  frequencyConfig?: any | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
 export type HabitFormProps = {
   categories: SimpleCategory[];
+  habit?: Habit | null;
 };
 
 export type FormUIProps = {
