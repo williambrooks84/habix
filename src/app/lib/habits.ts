@@ -54,9 +54,9 @@ export async function createHabit(input: {
   frequency?: string | null;
 }): Promise<Habit> {
   const rows = await sql`
-    INSERT INTO habits (name, category_id, user_id, motivation)
-    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null})
-    RETURNING id, name, category_id, user_id, motivation, created_at, updated_at
+    INSERT INTO habits (name, category_id, user_id, motivation, period_start, period_end)
+    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null}, ${input.periodStart ?? null}, ${input.periodEnd ?? null})
+    RETURNING id, name, category_id, user_id, motivation, period_start, period_end, frequency, created_at, updated_at
   `
   const r = rows[0]
   return {

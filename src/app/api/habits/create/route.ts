@@ -8,6 +8,8 @@ export async function POST(request: Request) {
     const name = body?.name;
     const categoryId = body?.categoryId ?? null;
     const motivation = body?.motivation ?? "";
+    const periodStart = body?.periodStart ? new Date(body.periodStart) : null;
+    const periodEnd = body?.periodEnd ? new Date(body.periodEnd) : null;
 
     if (!name || typeof name !== 'string') {
       return Response.json({ error: 'Invalid or missing `name`' }, { status: 400 });
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const habit = await createHabit({ name, categoryId, motivation,  userId });
+    const habit = await createHabit({ name, categoryId, motivation,  userId, periodStart, periodEnd });
     return Response.json({ habit });
   } catch (error) {
     console.error('Create habit error:', error);

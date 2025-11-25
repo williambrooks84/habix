@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import FormLabel from "@/components/ui/habit/form-label";
 import FormField from "../ui/habit/form-field";
 import { HabitFormProps } from "@/types/ui";
+import DatePicker from "@/components/ui/habit/date-picker";
 
 export default function CreateHabitForm({ categories }: HabitFormProps) {
     const router = useRouter();
@@ -18,6 +19,8 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
     const [error, setError] = React.useState<string | null>(null);
     const [categoryError, setCategoryError] = React.useState<string | null>(null);
     const [success, setSuccess] = React.useState(false);
+    const [startDate, setStartDate] = React.useState<string | null>(null);
+    const [endDate, setEndDate] = React.useState<string | null>(null);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -41,7 +44,7 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), categoryId, motivation }),
+                body: JSON.stringify({ name: name.trim(), categoryId, motivation, periodStart: startDate, periodEnd: endDate }),
             });
 
             if (!res.ok) {
@@ -110,6 +113,14 @@ export default function CreateHabitForm({ categories }: HabitFormProps) {
                         if (error) setError(null);
                     }}
                     placeholder="Quelle est votre motivation ?"
+                />
+            </div>
+            <div>
+                <DatePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    onChange={({ startDate, endDate }) => { setStartDate(startDate); setEndDate(endDate); }}
+                    label="Période"
                 />
             </div>
 

@@ -103,3 +103,13 @@ export type HabitProps = {
   items: HabitListItem[];
   className?: string;
 };
+
+export type DatePickerProps = {
+  startDate?: string | null;
+  endDate?: string | null;
+  onChange: (payload: { startDate: string | null; endDate: string | null }) => void;
+  label?: string;
+  allowRange?: boolean; 
+  minDate?: Date;
+  maxDate?: Date;
+};

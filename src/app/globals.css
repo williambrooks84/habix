@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap");
 @import "tailwindcss";
+@import "react-day-picker/dist/style.css";
 
 /* 🔥 Tailwind v4 reads tokens from here */
 @theme {
@@ -85,4 +86,119 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: 'Inter', sans-serif;
+}
+
+/* Date picker overrides */
+
+.rdp-day_today,
+.rdp-day_today .rdp-day_button,
+.rdp-day_today .rdp-button,
+.rdp-day_today button,
+.rdp-today,
+.rdp-today .rdp-day_button,
+.rdp-today .rdp-button,
+.rdp-today button {
+  color: var(--primary) !important;
+  background: transparent !important;
+}
+
+.rdp-selected {
+  border-color: var(--primary) !important;
+}
+
+.rdp-day_today svg *,
+.rdp-today svg *,
+.rdp-nav_button svg *,
+.rdp-day_button svg * {
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+.rdp-selected {
+  border-color: var(--primary) !important ;
+}
+
+.rdp-nav{
+  --nav-svg-color: var(--primary);
+  color: var(--nav-svg-color);
+
+  svg,
+  svg * {
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+}
+
+.rdp-dropdowns{
+  --dropdown-svg-color: var(--primary);
+
+  svg,
+  svg * {
+    stroke: var(--dropdown-svg-color) !important;
+    fill: var(--dropdown-svg-color) !important;
+  }
+}
+
+.rdp-dropdown {
+  background-color: var(--background);
+}
+
+.rdp-focused {
+  border-color: var(--primary) !important ;
+}
+
+.rdp-selected button {
+  border-color: var(--primary) !important;
+}
+
+.rdp-range_end button{
+  color: var(--foreground);
+  background-color: var(--primary) !important;
+}
+
+.rdp-range_start button{
+  color: var(--foreground);
+  background-color: var(--primary) !important;
+}
+
+.rdp-range_middle button{
+  color: var(--background) !important;
+}
+
+
+:root {
+  --rdp-day-size: 40px; 
+  --rdp-weekdays-height: 24px;
+  --rdp-caption-height: 44px; 
+}
+
+.rdp-month {
+  height: calc(var(--rdp-caption-height) + var(--rdp-weekdays-height) + (var(--rdp-day-size) * 6) + 80px);
+  box-sizing: border-box;
+}
+
+.rdp-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.rdp-week {
+  height: var(--rdp-day-size);
+}
+
+.rdp-day,
+.rdp-day_cell {
+  height: var(--rdp-day-size);
+  width: var(--rdp-day-size);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.rdp-day_button {
+  height: 100%;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
 }
