@@ -85,17 +85,24 @@ export async function GET(request: Request) {
         periodTo = addDays(periodTo, 6);
       }
 
-      const target = occurrencesBetween(freqType, config, periodFrom, periodTo, h.periodStart ?? null, h.periodEnd ?? null).length;
-      const completed = await countHabitRunsBetween(h.id, periodFrom, periodTo).catch((e) => {
+      let target = occurrencesBetween(freqType, config, periodFrom, periodTo, h.periodStart ?? null, h.periodEnd ?? null).length;
+      let completed = await countHabitRunsBetween(h.id, periodFrom, periodTo).catch((e) => {
         console.error('countHabitRunsBetween error for habit', h.id, e);
         return 0;
       });
       const doneToday = (await countHabitRunsBetween(h.id, today, today).catch(() => 0)) > 0;
 
+      // For daily habits in the Today widget, show a per-day target (1) and completed as today's completion
+      if (freqType === 'daily') {
+        target = 1;
+        completed = doneToday ? 1 : 0;
+      }
+
       return {
         id: h.id,
         name: h.name,
         subtitle: (h as any).subtitle ?? null,
+        categoryName: (h as any).categoryName ?? null,
         scheduledToday,
         target,
         completed,

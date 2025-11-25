@@ -21,12 +21,12 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             label: 'Accueil',
             icon: HomeIcon,
             onClick: () => router.push('/'),
-        }, /*
+        },
         {
             label: 'Habitudes',
             icon: HabitsIcon,
-            onClick: () => router.push('/habits'),
-        },
+            onClick: () => router.push('/habit'),
+        }, /*
         {
             label: 'Calendrier',
             icon: CalendarIcon,

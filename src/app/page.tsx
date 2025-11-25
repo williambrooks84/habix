@@ -61,18 +61,6 @@ export default function Home() {
           {hasHabits ? (
             <>
               <TodayHabits />
-              <HabitList
-                items={habits.map((h: any) => ({
-                  id: h.id,
-                  name: h.name,
-                  Icon: pickIconByName(h.category?.name ?? ''),
-                  subtitle: h.category?.name ?? undefined,
-                  onClick: () => {}, 
-                  motivation: h.motivation,
-                  periodStart: h.periodStart ?? null,
-                  periodEnd: h.periodEnd ?? null,
-                }))}
-              />
               <AddHabbitButton />
             </>
           ) : (

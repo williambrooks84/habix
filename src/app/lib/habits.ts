@@ -3,10 +3,11 @@ import { Habit } from './definitions'
 
 export async function getHabitsByUser(userId: number): Promise<Habit[]> {
   return (await sql`
-    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
-    FROM habits
-    WHERE user_id = ${userId}
-    ORDER BY created_at DESC
+    SELECT h.id, h.name, h.category_id, h.user_id, h.motivation, h.period_start, h.period_end, h.frequency_type, h.frequency_config, h.created_at, h.updated_at, c.name AS category_name
+    FROM habits h
+    LEFT JOIN categories c ON c.id = h.category_id
+    WHERE h.user_id = ${userId}
+    ORDER BY h.created_at DESC
   `).map((r:any) => ({
     id: r.id,
     name: r.name,
@@ -19,6 +20,7 @@ export async function getHabitsByUser(userId: number): Promise<Habit[]> {
     frequencyConfig: r.frequency_config,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    categoryName: r.category_name,
   }))
 }
 
