@@ -59,6 +59,9 @@ export default function HabitPage() {
                                 motivation: h.motivation,
                                 periodStart: h.periodStart ?? null,
                                 periodEnd: h.periodEnd ?? null,
+                                // include frequency fields from the API response so the UI can show them
+                                frequencyType: (h as any).frequencyType ?? (h as any).frequency_type ?? null,
+                                frequencyConfig: (h as any).frequencyConfig ?? (h as any).frequency_config ?? null,
                             }))}
                         />
                         <AddHabbitButton />

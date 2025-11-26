@@ -2,20 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import ProgressCircle from '../ui/habit/progress-circle';
 import { pickIconByName } from '@/app/lib/pick-icon-by-name';
-
-type Item = {
-  id: number;
-  name: string;
-  categoryName?: string | null;
-  scheduledToday: boolean;
-  target: number;
-  completed: number;
-  doneToday: boolean;
-  frequencyType?: string;
-};
+import { TodayHabitItem } from '@/app/lib/definitions';
 
 export default function TodayHabits() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<TodayHabitItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingIds, setPendingIds] = useState<Array<number>>([]);
 
@@ -30,7 +20,7 @@ export default function TodayHabits() {
 
   useEffect(() => { load(); }, []);
 
-  async function toggleToday(h: Item) {
+  async function toggleToday(h: TodayHabitItem) {
     const localYMD = (d = new Date()) => {
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, '0');

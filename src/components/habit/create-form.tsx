@@ -24,7 +24,6 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
     const [startDate, setStartDate] = React.useState<string | null>(null);
     const [endDate, setEndDate] = React.useState<string | null>(null);
 
-    // frequency state (use string literal defaults because FrequencyType is a type-only definition)
     const [frequency, setFrequency] = useState<{ type: FrequencyType; config?: FrequencyConfig }>(
         {
             type: "daily" as FrequencyType,
@@ -32,7 +31,6 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
         }
     );
 
-    // init from habit when editing (use only frequencyType / frequencyConfig, no legacy 'frequency')
     useEffect(() => {
         if (!habit) return;
         const type = (habit.frequencyType as FrequencyType) ?? "daily";
@@ -82,7 +80,6 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
             setName("");
             setMotivation("");
             setCategoryId(null);
-            // reset frequency to default if desired:
             setFrequency({ type: "daily", config: { interval: 1 } });
 
             router.push("/");

@@ -3,20 +3,15 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { HabitProps } from "@/types/ui";
-import { parseISO, format, startOfToday } from "date-fns";
-import { fr } from "date-fns/locale";
-import { DeleteIcon } from "@/components/ui/icons";
-
-function formatIsoForUi(iso?: string | null) {
-  if (!iso) return "";
-  return format(parseISO(iso), "PPP", { locale: fr });
-}
+import ListOverlay from "@/components/ui/habit/list-overlay";
+import DeleteModal from "../ui/habit/delete-modal";
 
 export default function HabitList({ items, className }: HabitProps) {
   const [localItems, setLocalItems] = useState(items ?? []);
   const [deletingIds, setDeletingIds] = useState<Array<string | number>>([]);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
   useEffect(() => {
     setLocalItems(items ?? []);
@@ -35,7 +30,7 @@ export default function HabitList({ items, className }: HabitProps) {
   async function confirmDelete() {
     if (!pendingDeleteId) return;
     const id = pendingDeleteId;
-    setDeletingIds((s) => [...s, id]);
+    setDeletingIds((s: Array<string | number>) => [...s, id]);
     try {
       const res = await fetch("/api/habits/delete", {
         method: "DELETE",
@@ -49,115 +44,89 @@ export default function HabitList({ items, className }: HabitProps) {
         return;
       }
       setLocalItems((prev) => prev.filter((it) => String(it.id) !== String(id)));
+      setSelectedItem((s: any | null) => (s && String(s.id) === String(id) ? null : s));
     } catch (err) {
       console.error("Delete habit error:", err);
       alert("Erreur lors de la suppression.");
     } finally {
-      setDeletingIds((s) => s.filter((x) => String(x) !== String(id)));
+      setDeletingIds((s: Array<string | number>) => s.filter((x) => String(x) !== String(id)));
       closeDeleteDialog();
     }
   }
 
   return (
     <>
-      <ul className={clsx("space-y-2", className)} role="list">
+      <ul className={clsx("flex flex-wrap justify-center gap-4", className)} role="list">
         {localItems.map((item) => {
           const Icon = item.Icon!;
-          const isDeleting = deletingIds.includes(item.id as any);
+
+          const rawFreq =
+            (item as any).frequencyType ??
+            (item as any).frequency_type ??
+            (item as any).freqType ??
+            (item as any).frequency?.type ??
+            (item as any).frequency?.frequencyType ??
+            null;
+
+          let freqText: string | null = null;
+          if (!rawFreq) {
+            freqText = null;
+          } else if (rawFreq === "daily" || rawFreq === "quotidien") {
+            freqText = "Quotidien";
+          } else if (rawFreq === "weekly" || rawFreq === "hebdomadaire") {
+            freqText = "Hebdomadaire";
+          } else if (rawFreq === "weekly-multi") {
+            freqText = "Hebdomadaire";
+          } else if (rawFreq === "monthly") {
+            freqText = "Mensuel";
+          } else if (rawFreq === "monthly-multi") {
+            freqText = "Mensuel";
+          } else {
+            freqText = String(rawFreq);
+          }
 
           return (
-            <li key={String(item.id)}>
-              <div className="w-full flex items-center justify-betweenp-3">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="flex-shrink-0">
-                    <Icon className="w-6 h-6" />
-                  </span>
+            <li key={String(item.id)} className="flex-none">
+              <button
+                type="button"
+                onClick={() => setSelectedItem(item)}
+                className="w-[150px] h-[150px] rounded-xl"
+                aria-haspopup="dialog"
+              >
+                <div
+                  className={clsx(
+                    "w-full h-full flex flex-col items-center justify-center rounded-lg border-2 border-primary"
+                  )}
+                >
+                  <Icon />
 
-                  <span className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">{item.name}</div>
-                    {item.subtitle && (
-                      <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>
-                    )}
-                    <p>{item.motivation}</p>
-
-                    <p className="text-sm text-muted-foreground">
-                      {item.periodStart && item.periodEnd ? (
-                        <>
-                          Du {formatIsoForUi(item.periodStart)}{" "}→{" "}{formatIsoForUi(item.periodEnd)}
-                        </>
-                      ) : (
-                        (() => {
-                          const single = item.periodStart ?? item.periodEnd ?? null;
-                          if (!single) return "";
-                          try {
-                            const d = parseISO(single);
-                            const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-                            const today = startOfToday();
-                            if (dDay < today) return `depuis ${format(d, "PPP", { locale: fr })}`;
-                            return `A partir du ${format(d, "PPP", { locale: fr })}`;
-                          } catch (e) {
-                            return formatIsoForUi(single);
-                          }
-                        })()
-                      )}
-                    </p>
-                  </span>
+                  <div className="text-center px-2 w-full flex flex-col">
+                    <span className="text-sm font-medium text-foreground w-full truncate">
+                      {item.name}
+                    </span>
+                    <span className="text-xs text-gray">{freqText}</span>
+                  </div>
                 </div>
+              </button>
 
-                <div className="flex-shrink-0">
-                  <button
-                    type="button"
-                    aria-label="Supprimer l'habitude"
-                    className="p-1 rounded hover:bg-destructive/10 disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={() => openDeleteDialog(item.id!)}
-                    disabled={isDeleting}
-                  >
-                    <DeleteIcon />
-                  </button>
-                </div>
-              </div>
             </li>
           );
         })}
       </ul>
 
-      {/* Modal popin for delete confirmation */}
-      {modalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center"
-        >
-          <div
-            className="fixed inset-0 bg-black/40"
-            onClick={closeDeleteDialog}
-            aria-hidden="true"
-          />
-          <div className="relative bg-background rounded-lg shadow-lg w-full max-w-md mx-4 p-6">
-            <h3 className="text-lg font-medium mb-2">Supprimer l'habitude</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Voulez-vous vraiment supprimer cette habitude ? Cette action est irréversible.
-            </p>
+      <ListOverlay
+        item={selectedItem}
+        onClose={() => setSelectedItem(null)}
+        onDelete={(id) => openDeleteDialog(id)}
+      />
 
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                className="px-3 py-2 rounded border bg-transparent"
-                onClick={closeDeleteDialog}
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                className="px-3 py-2 rounded bg-destructive text-white"
-                onClick={confirmDelete}
-                disabled={pendingDeleteId ? deletingIds.includes(pendingDeleteId) : false}
-              >
-                Supprimer
-              </button>
-            </div>
-          </div>
-        </div>
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeDeleteDialog}
+          onConfirm={confirmDelete}
+          pendingDeleteId={pendingDeleteId}
+          deletingIds={deletingIds}
+        />
       )}
     </>
   );

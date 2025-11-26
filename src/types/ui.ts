@@ -112,6 +112,7 @@ export type HabitListItem = {
   motivation?: string;
   periodStart?: string | null;
   periodEnd?: string | null;
+  frequencyType?: string | null;
   onClick?: (id: number | string) => void;
 };
 
@@ -128,4 +129,22 @@ export type DatePickerProps = {
   allowRange?: boolean; 
   minDate?: Date;
   maxDate?: Date;
+};
+
+export type ListOverlayProps = {
+  item: any | null;
+  onClose: () => void;
+  onDelete: (id: string | number) => void;
+};
+
+export  type ListDetailProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+export type DeleteModalProps = {
+  onClose: () => void;
+  onConfirm: () => Promise<void> | void;
+  pendingDeleteId?: string | number | null;
+  deletingIds?: Array<string | number>;
 };

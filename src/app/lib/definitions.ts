@@ -27,3 +27,14 @@ export type Category = {
   createdAt: Date
   updatedAt: Date
 }
+
+export type TodayHabitItem = {
+  id: number;
+  name: string;
+  categoryName?: string | null;
+  scheduledToday: boolean;
+  target: number;
+  completed: number;
+  doneToday: boolean;
+  frequencyType?: string;
+};

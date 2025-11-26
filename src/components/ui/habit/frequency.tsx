@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import type { FrequencyType, FrequencyConfig } from '@/app/types';
 
-type Value = { type: FrequencyType; config?: FrequencyConfig };
+type FrequencyValue = { type: FrequencyType; config?: FrequencyConfig };
 
-type Props = {
-  value: Value;
-  onChange: (v: Value) => void;
+type FrequencySelectProps = {
+  value: FrequencyValue;
+  onChange: (v: FrequencyValue) => void;
   className?: string;
-  periodStart?: string | null; // optional ISO / YYYY-MM-DD
-  periodEnd?: string | null;   // optional ISO / YYYY-MM-DD
+  periodStart?: string | null;
+  periodEnd?: string | null; 
 };
 
 const WEEKDAY_LABELS = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
@@ -25,7 +25,7 @@ export default function FrequencySelect({
   className,
   periodStart,
   periodEnd,
-}: Props) {
+}: FrequencySelectProps) {
   const [warning, setWarning] = useState<string | null>(null);
 
   const periodLength = useMemo(() => {
