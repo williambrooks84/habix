@@ -1,10 +1,9 @@
 "use client";
 
-import clsx from 'clsx';
 import { ButtonProps } from '@/types/ui';
+import { cn } from "@/app/lib/utils"
 
 export function Button({ children, className, style, href, ...rest }: ButtonProps) {
-  const cn = (...args: any[]) => clsx(...args);
 
   const variants: Record<string, string> = {
     primary: 'bg-primary text-foreground hover:opacity-95',

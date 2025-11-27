@@ -1,19 +1,10 @@
 import React from "react";
-import { parseISO, format, startOfToday } from "date-fns";
-import { fr } from "date-fns/locale";
+import { parseISO, startOfToday } from "date-fns";
+import { formatIsoForUi } from '@/app/lib/format-date';
 import { DeleteIcon, CrossIcon } from "../icons";
 import { Button } from "../button";
 import ListDetail from "./list-detail";
 import { ListOverlayProps } from "@/types/ui";
-
-function formatIsoForUi(iso?: string | null) {
-  if (!iso) return "";
-  try {
-    return format(parseISO(iso), "PPP", { locale: fr });
-  } catch {
-    return String(iso);
-  }
-}
 
 export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProps) {
   if (!item) return null;
@@ -48,15 +39,15 @@ export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProp
     ? `Du ${formatIsoForUi(item.periodStart)} → ${formatIsoForUi(item.periodEnd)}`
     : single
       ? (() => {
-        try {
-          const d = parseISO(single);
-          const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          const today = startOfToday();
-          if (dDay < today) return `depuis ${format(d, "PPP", { locale: fr })}`;
-          return `A partir du ${format(d, "PPP", { locale: fr })}`;
-        } catch {
-          return formatIsoForUi(single);
-        }
+          try {
+            const d = parseISO(single);
+            const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const today = startOfToday();
+            if (dDay < today) return `depuis ${formatIsoForUi(single)}`;
+            return `A partir du ${formatIsoForUi(single)}`;
+          } catch {
+            return formatIsoForUi(single);
+          }
       })()
       : "";
 

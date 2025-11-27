@@ -26,12 +26,12 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             label: 'Habitudes',
             icon: HabitsIcon,
             onClick: () => router.push('/habit'),
-        }, /*
+        }, 
         {
             label: 'Calendrier',
             icon: CalendarIcon,
             onClick: () => router.push('/calendar'),
-        }*/
+        }
     ]
 
     useEffect(() => {
