@@ -60,9 +60,57 @@ export default function FrequencySelect({
     const defaultConfig: FrequencyConfig = (
       type === 'weekly-multi' ? { days: getDefaultDaysForPeriod() } :
       type === 'monthly' ? { dayOfMonth: 1 } :
+      type === 'monthly-multi' ? { dates: [1, 15] } :
       type === 'daily' ? { interval: 1 } : {}
     );
     onChange({ type, config: defaultConfig });
+  }
+
+  function toggleMonthDate(dayNum: number) {
+    setWarning(null);
+    const dates = ((value.config as { dates?: number[] })?.dates ?? []) as number[];
+    const has = dates.includes(dayNum);
+    const next = has ? dates.filter(d => d !== dayNum) : [...dates, dayNum];
+    const nextUnique = Array.from(new Set(next)).sort((a, b) => a - b);
+    onChange({ type: 'monthly-multi', config: { dates: nextUnique } });
+  }
+
+  function setSingleMonthDate(dayNum: number) {
+    setWarning(null);
+    const current = (value.config as any)?.dayOfMonth;
+    if (current === dayNum) {
+      onChange({ type: 'monthly', config: {} });
+    } else {
+      onChange({ type: 'monthly', config: { dayOfMonth: dayNum } });
+    }
+  }
+
+  const renderMonthDatePicker = (multi = false) => {
+    const selectedDates = multi ? ((value.config as { dates?: number[] })?.dates ?? []) : [];
+    const selectedSingle = (value.config as any)?.dayOfMonth ?? null;
+    const days = Array.from({ length: 31 }, (_, i) => i + 1);
+    return (
+      <div className="mt-2">
+        <div className="grid grid-cols-7 gap-1">
+          {days.map((d) => {
+            const checked = multi ? selectedDates.includes(d) : selectedSingle === d;
+            return (
+              <button
+                key={d}
+                type="button"
+                onClick={() => (multi ? toggleMonthDate(d) : setSingleMonthDate(d))}
+                className={`py-1 rounded ${checked ? 'bg-primary text-foreground' : 'bg-transparent border'}`}
+                aria-pressed={checked}
+                aria-label={`Jour ${d}`}
+              >
+                {d}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">Sélectionnez le(s) jour(s) du mois</p>
+      </div>
+    );
   }
 
   function toggleWeekday(day: number) {
@@ -163,19 +211,8 @@ export default function FrequencySelect({
         renderWeekdaySelector(value.type === 'weekly-multi')
       }
 
-      {value.type === 'monthly' && (
-        <div className="mt-2 flex gap-2 items-center">
-          <label className="text-sm">Jour du mois</label>
-          <input
-            type="number"
-            min={1}
-            max={31}
-            className="border rounded px-2 py-1 w-20"
-            value={(value.config as any)?.dayOfMonth ?? ''}
-            onChange={(e) => onChange({ type: 'monthly', config: { dayOfMonth: Number(e.target.value) } })}
-          />
-        </div>
-      )}
+      {value.type === 'monthly' && renderMonthDatePicker(false)}
+      {value.type === 'monthly-multi' && renderMonthDatePicker(true)}
 
       {warning && <p className="text-xs text-amber-600 mt-2">{warning}</p>}
     </div>

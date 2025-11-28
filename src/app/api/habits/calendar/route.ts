@@ -48,6 +48,12 @@ function isScheduledOnDate(
     return d.getDate() === dom;
   }
 
+  if (ft === "monthly-multi") {
+    const dates = (config?.dates ?? []).map((n: any) => Number(n)).filter((n: number) => !isNaN(n) && n >= 1 && n <= 31);
+    if (!dates || dates.length === 0) return false;
+    return dates.includes(d.getDate());
+  }
+
   return false;
 }
 
@@ -68,7 +74,6 @@ function occurrencesBetween(
   return out;
 }
 
-// new helpers: local YMD and local day bounds
 function toLocalYmd(d?: Date | null) {
   if (!d) return null;
   const y = d.getFullYear();

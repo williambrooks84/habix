@@ -125,12 +125,13 @@ export function CalendarHijri() {
                   : "text-inherit"
 
               const dayButtonBase =
-                "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70"
+                "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70 data-[today=true]:ring-2 data-[today=true]:ring-gray-300 data-[today=true]:ring-offset-2 data-[selected-single=true]:ring-0"
 
               return (
                 <Button
                   variant="transparent"
                   size="icon"
+                  data-today={props?.day?.isToday ?? props?.day?.today ?? props?.modifiers?.today ?? false}
                   className={cn(dayButtonBase, props.className)}
                   {...props}
                 >
@@ -149,10 +150,10 @@ export function CalendarHijri() {
         <h2 className="text-lg font-medium text-center">{selectedYmd ? ` ${formatIsoForUi(selectedYmd)}` : 'Sélectionnez une date'}</h2>
         <div className="flex flex-col gap-4">
           {selectedYmd === toYmd(new Date()) && (
-            <p className="text-sm text-primary text-center mt-1">N'oubliez pas de réaliser vos habitudes du jour !</p>
+            <p className="text-sm text-primary text-center mt-1">N'oubliez pas de réaliser vos habitudes du jour</p>
           )}
           {(selectedYmd ? (dayMap[selectedYmd] ?? []) : []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucune habitude pour cette date n'a été créée.</p>
+            <p className="text-sm text-center text-muted-foreground">Aucune habitude pour cette date n'a été créée.</p>
           ) : (
             <div className="flex flex-col gap-4">
               {itemsForSelected.map((it: { id: number; name: string; done: boolean; category?: string | null }) => {
@@ -373,6 +374,7 @@ function CalendarDayButton({
       variant="transparent"
       size="icon"
       data-day={day?.date?.toLocaleDateString()}
+      data-today={modifiers?.today}
       data-selected-single={
         modifiers?.selected &&
         !modifiers?.range_start &&
@@ -383,7 +385,7 @@ function CalendarDayButton({
       data-range-end={modifiers?.range_end}
       data-range-middle={modifiers?.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70",
+        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70 data-[today=true]:ring-2 data-[today=true]:ring-ring data-[today=true]:ring-offset-2 data-[today=true]:z-20",
         defaultClassNames.day,
         className
       )}
