@@ -148,3 +148,15 @@ export type DeleteModalProps = {
   pendingDeleteId?: string | number | null;
   deletingIds?: Array<string | number>;
 };
+
+//Chart
+
+export type ChartTooltipContentProps = {
+  active?: boolean;
+  payload?: any[];
+  label?: any;
+  className?: string;
+  nameKey?: string;
+  valueFormatter?: (value: any, name: any) => React.ReactNode;
+  labelFormatter?: (label: string) => React.ReactNode;
+};

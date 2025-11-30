@@ -58,6 +58,12 @@ export default function TodayHabits() {
         }
       }
       await load({ suppressSpinner: true });
+      try {
+        // notify other components (chart, calendar) that habits changed for today
+        window.dispatchEvent(new CustomEvent("habits:changed", { detail: { date: localYMD(), habitId: h.id } }))
+      } catch {
+        /* ignore */
+      }
     } catch (err) {
       console.error('toggle error', err);
       setItems((prev) => prev.map(i => i.id === h.id ? { ...i, doneToday: h.doneToday, completed: h.completed } : i));

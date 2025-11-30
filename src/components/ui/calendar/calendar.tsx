@@ -1,3 +1,5 @@
+//Shadcn component
+
 "use client"
 
 import * as React from "react"
@@ -102,6 +104,15 @@ export function CalendarHijri() {
         next[selectedYmd] = arr
         return next
       })
+      try {
+        try {
+          window.dispatchEvent(new CustomEvent("habits:changed", { detail: { date: selectedYmd, habitId: id } }))
+        } catch {
+          // ignore
+        }
+      } catch {
+        // ignore
+      }
     } catch (err) {
       console.error('Toggle completion error', err)
     } finally {

@@ -9,6 +9,7 @@ import AddHabbitButton from '@/components/ui/habit/add-habit-button';
 import HabitList from '@/components/habit/habit-list';
 import { pickIconByName } from './lib/pick-icon-by-name';
 import TodayHabits from '@/components/habit/today-habits';
+import { ChartLineInteractive } from '@/components/ui/evolution/chart';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -70,6 +71,7 @@ export default function Home() {
             </>
           )}
         </section>
+        <ChartLineInteractive />
       </main>
 
       <footer
