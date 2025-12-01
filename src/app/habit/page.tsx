@@ -53,6 +53,7 @@ export default function HabitPage() {
                             items={habits.map((h: any) => ({
                                 id: h.id,
                                 name: h.name,
+                                color: h.color ?? null,
                                 Icon: pickIconByName(h.category?.name ?? ''),
                                 subtitle: h.category?.name ?? undefined,
                                 onClick: () => { },

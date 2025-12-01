@@ -96,6 +96,7 @@ export default function TodayHabits() {
                         percent={h.frequencyType === 'daily' ? (h.doneToday ? 1 : 0) : percent}
                         size={64}
                         showLabel={false}
+                        color={ (h as any).color ?? undefined }
                         center={isPending ? <ToggleSpin/> : <div className="w-6 h-6 text-primary flex items-center justify-center"><Icon /></div>}
                         title={h.name}
                         subtitle={`${h.completed}/${h.target} this period`}
@@ -108,6 +109,7 @@ export default function TodayHabits() {
                         percent={h.frequencyType === 'daily' ? (h.doneToday ? 1 : 0) : percent}
                         size={64}
                         showLabel={false}
+                        color={ (h as any).color ?? undefined }
                         center={isPending ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : undefined}
                         title={h.name}
                         subtitle={`${h.completed}/${h.target} this period`}

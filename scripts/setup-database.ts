@@ -1,7 +1,3 @@
-// scripts/setup-database.ts
-
-//Commande d'exécution: npx tsx scripts/setup-database.ts
-
 import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 import { resolve } from 'path';
@@ -96,7 +92,8 @@ async function setupDatabase() {
       ALTER TABLE habits
         ADD COLUMN IF NOT EXISTS frequency_type VARCHAR(50),
         ADD COLUMN IF NOT EXISTS frequency_config JSONB,
-        ADD COLUMN IF NOT EXISTS next_run TIMESTAMPTZ
+        ADD COLUMN IF NOT EXISTS next_run TIMESTAMPTZ,
+        ADD COLUMN IF NOT EXISTS color VARCHAR(32)
     `;
 
     // Detect which source column exists ("frequence" or "frequency") and backfill accordingly

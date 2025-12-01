@@ -9,6 +9,7 @@ type Props = {
   center?: React.ReactNode;
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
+  color?: string | null;
 };
 
 export default function ProgressCircle({ 
@@ -20,6 +21,7 @@ export default function ProgressCircle({
   center, 
   title, 
   subtitle 
+  , color
 }: Props) {
   const r = (size - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
@@ -29,7 +31,7 @@ export default function ProgressCircle({
   return (
     <div className={`inline-flex flex-col items-center ${className || ''}`}>
       <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={color ? { ['--habit-color' as any]: color } : undefined}>
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -42,7 +44,7 @@ export default function ProgressCircle({
             cx={size / 2}
             cy={size / 2}
             r={r}
-            className="stroke-primary fill-none stroke-linecap-round transition-all duration-350 ease-out"
+            className="fill-none stroke-linecap-round transition-all duration-350 ease-out stroke-[var(--habit-color,var(--primary))]"
             strokeWidth={strokeWidth}
             strokeDasharray={c}
             strokeDashoffset={dashoffset}

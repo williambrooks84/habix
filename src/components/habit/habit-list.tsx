@@ -85,6 +85,10 @@ export default function HabitList({ items, className }: HabitProps) {
             freqText = String(rawFreq);
           }
 
+          const tileStyle = item.color
+            ? ({ ['--habit-color' as any]: item.color, borderColor: item.color } as React.CSSProperties)
+            : undefined;
+
           return (
             <li key={String(item.id)} className="flex-none">
               <button
@@ -93,12 +97,11 @@ export default function HabitList({ items, className }: HabitProps) {
                 className="w-[150px] h-[150px] rounded-xl"
                 aria-haspopup="dialog"
               >
-                <div
-                  className={clsx(
-                    "w-full h-full flex flex-col items-center justify-center rounded-lg border-2 border-primary"
-                  )}
-                >
-                  <Icon />
+                  <div
+                    className="w-full h-full flex flex-col items-center justify-center rounded-lg border-2 border-[color:var(--habit-color,var(--primary))]"
+                    style={tileStyle}
+                  >
+                  <Icon/>
 
                   <div className="text-center px-2 w-full flex flex-col">
                     <span className="text-sm font-medium text-foreground w-full truncate">

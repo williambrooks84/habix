@@ -19,7 +19,7 @@ import { ToggleSpin } from "../ToggleSpin"
 
 export function CalendarHijri() {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [dayMap, setDayMap] = React.useState<Record<string, Array<{ id: number; name: string; done: boolean; category?: string | null }>>>(() => ({}))
+  const [dayMap, setDayMap] = React.useState<Record<string, Array<{ id: number; name: string; done: boolean; category?: string | null; color?: string | null }>>>(() => ({}))
 
   function toYmd(d?: Date | null) {
     if (!d) return null
@@ -71,7 +71,7 @@ export function CalendarHijri() {
     setSelectedYmd(toYmd(date))
   }, [date])
 
-  const itemsForSelected: Array<{ id: number; name: string; done: boolean; category?: string | null }> = selectedYmd ? (dayMap[selectedYmd] ?? []) : []
+  const itemsForSelected: Array<{ id: number; name: string; done: boolean; category?: string | null; color?: string | null }> = selectedYmd ? (dayMap[selectedYmd] ?? []) : []
   const [togglingIds, setTogglingIds] = React.useState<number[]>([])
 
   async function toggleCompletion(item: { id: number; name: string; done: boolean }) {
@@ -187,16 +187,17 @@ export function CalendarHijri() {
             <p className="text-sm text-center text-muted-foreground">Aucune habitude pour cette date n'a été créée.</p>
           ) : (
             <div className="flex flex-col gap-4">
-              {itemsForSelected.map((it: { id: number; name: string; done: boolean; category?: string | null }) => {
+              {itemsForSelected.map((it: { id: number; name: string; done: boolean; category?: string | null; color?: string | null }) => {
                 const Icon = pickIconByName(it.category ?? it.name ?? '')
                 const toggling = togglingIds.includes(it.id)
                 const isSelectedToday = selectedYmd === toYmd(new Date())
+                const nameStyle = it.color ? ({ ['--habit-color' as any]: it.color } as React.CSSProperties) : undefined;
                 return (
-                  <div key={`${selectedYmd}-${it.id}`} className="flex items-center gap-3">
-                    <span className="flex items-center justify-center">
-                      <Icon />
-                    </span>
-                    <span className="flex-1 truncate">{it.name}</span>
+                    <div key={`${selectedYmd}-${it.id}`} className="flex items-center gap-3" style={nameStyle}>
+                      <span className="flex items-center justify-center">
+                        <Icon />
+                      </span>
+                      <span className="flex-1 truncate text-[color:var(--habit-color,var(--primary))]">{it.name}</span>
                     <button
                       type="button"
                       onClick={() => toggleCompletion(it)}

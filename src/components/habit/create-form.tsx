@@ -23,6 +23,7 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
     const [success, setSuccess] = React.useState(false);
     const [startDate, setStartDate] = React.useState<string | null>(null);
     const [endDate, setEndDate] = React.useState<string | null>(null);
+    const [color, setColor] = React.useState<string>("#04D6AB");
 
     const [frequency, setFrequency] = useState<{ type: FrequencyType; config?: FrequencyConfig }>(
         {
@@ -37,6 +38,15 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
         const config = (habit.frequencyConfig ?? undefined) as FrequencyConfig | undefined;
         setFrequency({ type, config });
     }, [habit]);
+
+    // expose selected color as a CSS variable for preview / token usage
+    useEffect(() => {
+        try {
+            document.documentElement.style.setProperty("--habit-selected-color", color);
+        } catch {
+            // ignore in non-browser environments
+        }
+    }, [color]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -64,6 +74,7 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
                     name: name.trim(),
                     categoryId,
                     motivation,
+                    color,
                     periodStart: startDate,
                     periodEnd: endDate,
                     frequency_type: frequency.type,
@@ -80,6 +91,7 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
             setName("");
             setMotivation("");
             setCategoryId(null);
+            setColor("#04D6AB");
             setFrequency({ type: "daily", config: { interval: 1 } });
 
             router.push("/");
@@ -150,6 +162,41 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
                     onChange={({ startDate, endDate }) => { setStartDate(startDate); setEndDate(endDate); }}
                     label="Période"
                 />
+            </div>
+
+            <div className="flex flex-col gap-2">
+                <FormLabel id="color" label="Couleur" />
+                <p className="text-sm text-muted-foreground">Choisissez une couleur pour cette habitude (sera envoyée au serveur)</p>
+                <div className="flex items-center gap-3 mt-2">
+                    {[
+                        "#04D6AB",
+                        "#F97316",
+                        "#F472B6",
+                        "#60A5FA",
+                        "#6C5CE7",
+                        "#FFD166",
+                        "#FF7A7A",
+                    ].map((c) => (
+                        <button
+                            key={c}
+                            type="button"
+                            aria-label={`Choisir la couleur ${c}`}
+                            onClick={() => setColor(c)}
+                            className={"w-8 h-8 rounded-md border-2" + (color === c ? " ring-2 ring-offset-1 ring-primary" : "")}
+                            style={{ backgroundColor: c }}
+                        />
+                    ))}
+
+                    {/* custom color picker */}
+                    <input
+                        aria-label="Couleur personnalisée"
+                        title="Couleur personnalisée"
+                        type="color"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
+                        className="w-10 h-8 p-0 border rounded-md"
+                    />
+                </div>
             </div>
 
 

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 		}
 
 		const rows = await sql`
-			SELECT h.id, h.name, h.category_id, h.user_id, h.motivation, h.period_start, h.period_end, h.frequency_type, h.frequency_config, h.created_at, h.updated_at,
+			SELECT h.id, h.name, h.category_id, h.user_id, h.color, h.motivation, h.period_start, h.period_end, h.frequency_type, h.frequency_config, h.created_at, h.updated_at,
 						 c.id as cat_id, c.name as cat_name
 			FROM habits h
 			LEFT JOIN categories c ON c.id = h.category_id
@@ -28,6 +28,7 @@ export async function GET(request: Request) {
 			id: r.id,
 			name: r.name,
 			category: r.cat_id ? { id: r.cat_id, name: r.cat_name } : null,
+			color: r.color ?? null,
 			motivation: r.motivation,
 			periodStart: r.period_start,
 			periodEnd: r.period_end,

@@ -74,6 +74,7 @@ export type SimpleCategory = {
 export type Habit = {
   id?: number | string;
   name: string;
+  color?: string | null;
   categoryId?: number | null;
   motivation?: string | null;
   periodStart?: string | null;
@@ -113,6 +114,7 @@ export type HabitListItem = {
   periodStart?: string | null;
   periodEnd?: string | null;
   frequencyType?: string | null;
+  color? : string | null;
   onClick?: (id: number | string) => void;
 };
 

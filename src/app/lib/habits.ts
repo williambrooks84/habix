@@ -3,7 +3,7 @@ import { Habit } from './definitions'
 
 export async function getHabitsByUser(userId: number): Promise<Habit[]> {
   return (await sql`
-    SELECT h.id, h.name, h.category_id, h.user_id, h.motivation, h.period_start, h.period_end, h.frequency_type, h.frequency_config, h.created_at, h.updated_at, c.name AS category_name
+    SELECT h.id, h.name, h.category_id, h.user_id, h.color, h.motivation, h.period_start, h.period_end, h.frequency_type, h.frequency_config, h.created_at, h.updated_at, c.name AS category_name
     FROM habits h
     LEFT JOIN categories c ON c.id = h.category_id
     WHERE h.user_id = ${userId}
@@ -13,6 +13,7 @@ export async function getHabitsByUser(userId: number): Promise<Habit[]> {
     name: r.name,
     categoryId: r.category_id,
     userId: r.user_id,
+    color: r.color,
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,
@@ -26,7 +27,7 @@ export async function getHabitsByUser(userId: number): Promise<Habit[]> {
 
 export async function getHabitById(id: number): Promise<Habit | null> {
   const rows = await sql`
-    SELECT id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
+    SELECT id, name, category_id, user_id, color, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
     FROM habits
     WHERE id = ${id}
     LIMIT 1
@@ -38,6 +39,7 @@ export async function getHabitById(id: number): Promise<Habit | null> {
     name: r.name,
     categoryId: r.category_id,
     userId: r.user_id,
+    color: r.color,
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,
@@ -53,15 +55,16 @@ export async function createHabit(input: {
   categoryId?: number | null;
   motivation?: string | null;
   userId?: number | null;
+  color?: string | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
   frequencyType?: string | null;
   frequencyConfig?: string | null;
 }): Promise<Habit> {
   const rows = await sql`
-    INSERT INTO habits (name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config)
-    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.motivation ?? null}, ${input.periodStart ?? null}, ${input.periodEnd ?? null}, ${input.frequencyType ?? null}, ${input.frequencyConfig ?? null})
-    RETURNING id, name, category_id, user_id, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
+    INSERT INTO habits (name, category_id, user_id, color, motivation, period_start, period_end, frequency_type, frequency_config)
+    VALUES (${input.name}, ${input.categoryId ?? null}, ${input.userId ?? null}, ${input.color ?? null}, ${input.motivation ?? null}, ${input.periodStart ?? null}, ${input.periodEnd ?? null}, ${input.frequencyType ?? null}, ${input.frequencyConfig ?? null})
+    RETURNING id, name, category_id, user_id, color, motivation, period_start, period_end, frequency_type, frequency_config, created_at, updated_at
   `
   const r = rows[0]
   return {
@@ -69,6 +72,7 @@ export async function createHabit(input: {
     name: r.name,
     categoryId: r.category_id,
     userId: r.user_id,
+    color: r.color,
     motivation: r.motivation,
     periodStart: r.period_start,
     periodEnd: r.period_end,

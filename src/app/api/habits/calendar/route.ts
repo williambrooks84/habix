@@ -125,7 +125,7 @@ export async function GET(request: Request) {
           const done = doneCount > 0;
 
           if (!map[ymd]) map[ymd] = [];
-          map[ymd].push({ id: h.id, name: h.name, done, category: (h as any).categoryName ?? null });
+          map[ymd].push({ id: h.id, name: h.name, done, category: (h as any).categoryName ?? null, color: h.color ?? null });
         }
       } catch (err) {
         console.error("Error building calendar for habit", h.id, err);

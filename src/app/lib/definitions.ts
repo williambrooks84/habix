@@ -12,6 +12,7 @@ export type Habit = {
   name: string;
   categoryId: number | null;
   userId: number | null;
+  color?: string | null;
   motivation?: string | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
@@ -32,6 +33,7 @@ export type TodayHabitItem = {
   id: number;
   name: string;
   categoryName?: string | null;
+  color?: string | null;
   scheduledToday: boolean;
   target: number;
   completed: number;
