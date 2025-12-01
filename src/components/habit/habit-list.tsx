@@ -94,7 +94,7 @@ export default function HabitList({ items, className }: HabitProps) {
               <button
                 type="button"
                 onClick={() => setSelectedItem(item)}
-                className="w-[150px] h-[150px] rounded-xl"
+                className="w-[140px] h-[140px] rounded-xl"
                 aria-haspopup="dialog"
               >
                   <div

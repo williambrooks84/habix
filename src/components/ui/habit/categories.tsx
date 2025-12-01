@@ -65,7 +65,7 @@ export default function Categories({ items, categories, onSelect, className, sel
                          }}
                          aria-pressed={isSelected ? 'true' : 'false'}
                          className={clsx(
-                             'flex flex-col items-center gap-2 px-7 py-11 rounded-xl border-3 transition-colors focus:outline-none min-w-[var(--cat-min-w)]',
+                             'flex flex-col items-center gap-2 px-4 py-11 rounded-xl border-3 transition-colors focus:outline-none min-w-[var(--cat-min-w)]',
                              isSelected
                                  ? 'text-foreground border-primary'
                                  : 'bg-transparent text-foreground border-grey'

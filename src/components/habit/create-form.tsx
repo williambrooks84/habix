@@ -39,12 +39,11 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
         setFrequency({ type, config });
     }, [habit]);
 
-    // expose selected color as a CSS variable for preview / token usage
     useEffect(() => {
         try {
             document.documentElement.style.setProperty("--habit-selected-color", color);
         } catch {
-            // ignore in non-browser environments
+            // ignore 
         }
     }, [color]);
 
@@ -187,7 +186,6 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
                         />
                     ))}
 
-                    {/* custom color picker */}
                     <input
                         aria-label="Couleur personnalisée"
                         title="Couleur personnalisée"
