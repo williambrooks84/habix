@@ -13,7 +13,6 @@ import { formatIsoForUi } from '@/app/lib/format-date'
 import { pickIconByName } from '@/app/lib/pick-icon-by-name'
 import { Button } from "@/components/ui/button"
 import { CheckIconMute, CheckIconValid } from "../icons"
-import { ToggleSpin } from "../ToggleSpin"
 
 export function CalendarHijri() {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
@@ -31,24 +30,11 @@ export function CalendarHijri() {
     return toYmd(new Date())
   })
 
-  const [monthLoading, setMonthLoading] = React.useState(false)
-
-  const isSelectedInCurrentMonth = React.useMemo(() => {
-    if (!selectedYmd) return false
-    const parts = selectedYmd.split('-')
-    if (parts.length < 2) return false
-    const y = Number(parts[0])
-    const m = Number(parts[1])
-    const d = date ?? new Date()
-    return y === d.getFullYear() && m === d.getMonth() + 1
-  }, [selectedYmd, date])
-
   React.useEffect(() => {
     const d = date ?? new Date()
     const year = d.getFullYear()
     const month = d.getMonth() + 1
-      const abort = new AbortController()
-      setMonthLoading(true)
+    const abort = new AbortController()
     fetch(`/api/habits/calendar?year=${year}&month=${month}`, { signal: abort.signal })
       .then((res) => res.json())
       .then((json) => {
@@ -57,11 +43,7 @@ export function CalendarHijri() {
       .catch((err) => {
         if ((err as any)?.name !== 'AbortError') console.error('Failed to load calendar habits', err)
       })
-        .finally(() => setMonthLoading(false))
-      return () => {
-        abort.abort()
-        setMonthLoading(false)
-      }
+    return () => abort.abort()
   }, [date])
 
   React.useEffect(() => {
@@ -170,9 +152,7 @@ export function CalendarHijri() {
           {selectedYmd === toYmd(new Date()) && (
             <p className="text-sm text-primary text-center mt-1">N'oubliez pas de réaliser vos habitudes du jour</p>
           )}
-          {monthLoading && isSelectedInCurrentMonth ? (
-            <p className="text-sm text-center text-muted-foreground">Chargement...</p>
-          ) : (selectedYmd ? (dayMap[selectedYmd] ?? []) : []).length === 0 ? (
+          {(selectedYmd ? (dayMap[selectedYmd] ?? []) : []).length === 0 ? (
             <p className="text-sm text-center text-muted-foreground">Aucune habitude pour cette date n'a été créée.</p>
           ) : (
             <div className="flex flex-col gap-4">
@@ -199,9 +179,7 @@ export function CalendarHijri() {
                           : 'hover:bg-muted/10'
                       )}
                     >
-                      {toggling ? (
-                        <ToggleSpin />
-                      ) : it.done ? (
+                      {it.done ? (
                         <CheckIconValid />
                       ) : (
                         <CheckIconMute/>
