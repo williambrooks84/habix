@@ -45,25 +45,69 @@ export function CalendarHijri() {
     return y === d.getFullYear() && m === d.getMonth() + 1
   }, [selectedYmd, date])
 
+  const monthCache = React.useRef<Record<string, Record<string, Array<any>>>>({});
+
   React.useEffect(() => {
-    const d = date ?? new Date()
-    const year = d.getFullYear()
-    const month = d.getMonth() + 1
-      const abort = new AbortController()
-      setMonthLoading(true)
-    fetch(`/api/habits/calendar?year=${year}&month=${month}`, { signal: abort.signal })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.days) setDayMap(json.days)
+    const d = date ?? new Date();
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const abort = new AbortController();
+    setMonthLoading(true);
+
+    const months = [month - 1, month, month + 1].map((m) => {
+      let y = year;
+      let mm = m;
+      if (mm < 1) { mm = 12; y = year - 1; }
+      else if (mm > 12) { mm = 1; y = year + 1; }
+      return { y, mm, key: `${y}-${String(mm).padStart(2, "0")}` };
+    });
+
+    const cached: Record<string, Array<any>> = {};
+    const toFetch = months.filter(({ key }) => {
+      if (monthCache.current[key]) {
+        Object.entries(monthCache.current[key]).forEach(([ymd, items]) => {
+          cached[ymd] = (cached[ymd] ?? []).concat(items);
+        });
+        return false;
+      }
+      return true;
+    });
+
+    if (!toFetch.length) {
+      setDayMap(cached);
+      setMonthLoading(false);
+      return;
+    }
+
+    Promise.all(
+      toFetch.map(({ y, mm, key }) =>
+        fetch(`/api/habits/calendar?year=${y}&month=${mm}`, { signal: abort.signal })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((json) => {
+            if (json?.days) monthCache.current[key] = json.days;
+            return json?.days ?? {};
+          })
+          .catch(() => ({}))
+      )
+    )
+      .then((fetched) => {
+        const merged = { ...cached };
+        fetched.forEach((days) => {
+          Object.entries(days).forEach(([ymd, items]) => {
+            merged[ymd] = (merged[ymd] ?? []).concat(items as any[]);
+          });
+        });
+        setDayMap(merged);
       })
       .catch((err) => {
-        if ((err as any)?.name !== 'AbortError') console.error('Failed to load calendar habits', err)
+        if ((err as any)?.name !== "AbortError") console.error("Failed to load calendar habits", err);
       })
-        .finally(() => setMonthLoading(false))
-      return () => {
-        abort.abort()
-        setMonthLoading(false)
-      }
+      .finally(() => setMonthLoading(false));
+
+    return () => {
+      abort.abort();
+      setMonthLoading(false);
+    };
   }, [date])
 
   React.useEffect(() => {
