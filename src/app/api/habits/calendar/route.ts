@@ -107,7 +107,7 @@ export async function GET(request: Request) {
 
     const habits = await getHabitsByUser(userId);
 
-    const map: Record<string, Array<{ id: number; name: string; done: boolean; category?: string }>> = {};
+    const map: Record<string, Array<{ id: number; name: string; done: boolean; category?: string | null; color?: string | null }>> = {};
 
     for (const h of habits) {
       try {
