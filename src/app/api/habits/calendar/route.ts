@@ -107,7 +107,7 @@ export async function GET(request: Request) {
 
     const habits = await getHabitsByUser(userId);
 
-    const map: Record<string, Array<{ id: number; name: string; done: boolean; category?: string }>> = {};
+    const map: Record<string, Array<{ id: number; name: string; done: boolean; category?: string; color?: string | null }>> = {};
 
     for (const h of habits) {
       try {
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
           const done = doneCount > 0;
 
           if (!map[ymd]) map[ymd] = [];
-          map[ymd].push({ id: h.id, name: h.name, done, category: (h as any).categoryName ?? null });
+          map[ymd].push({ id: h.id, name: h.name, done, category: (h as any).categoryName ?? null, color: (h as any).color ?? null });
         }
       } catch (err) {
         console.error("Error building calendar for habit", h.id, err);
