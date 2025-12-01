@@ -174,7 +174,7 @@ export function ChartLineInteractive() {
   }
   return (
     <article className="bg-background text-foreground py-4 sm:py-0" aria-labelledby="chart-heading">
-      <h2 id="chart-heading" className="sr-only">Progression quotidienne</h2>
+      <h2 id="chart-heading" className="text-lg font-semibold text-foreground mb-3">Votre progression quotidienne</h2>
       <div className="flex flex-row text-center" role="region" aria-label="Stats rapides">
         <ChartStat label="Aujourd'hui" value={latest} />
         <ChartStat label="Cette semaine" value={average} />
@@ -193,15 +193,15 @@ export function ChartLineInteractive() {
             Aucune donnée disponible pour cette période.
           </div>
         ) : (
-          <ChartContainer className="aspect-auto h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={data}
-                margin={{
-                  left: 12,
-                  right: 12,
-                }}
-              >
+          <ChartContainer className="w-full h-[320px] min-h-[250px] min-w-0">
+            <ResponsiveContainer width="100%" height={320}>
+             <LineChart
+               data={data}
+               margin={{
+                 left: 12,
+                 right: 12,
+               }}
+             >
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"

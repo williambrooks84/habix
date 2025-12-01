@@ -58,26 +58,20 @@ export default function Home() {
         </h1>
         <h2 className="text-lg text-foreground">Pensez à compléter vos habitudes du jour !</h2>
 
-        <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9">
+        <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9 mb-10">
           {hasHabits ? (
             <>
               <TodayHabits />
-              <AddHabbitButton />
+              <ChartLineInteractive />
             </>
           ) : (
             <>
               <NoHabit />
-              <AddHabbitButton />
             </>
           )}
         </section>
-        <ChartLineInteractive />
       </main>
 
-      <footer
-        className="row-start-3 flex gap-6 flex-wrap items-center justify-center"
-        role="contentinfo"
-      />
     </div>
   );
 }

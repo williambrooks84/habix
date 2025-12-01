@@ -59,7 +59,6 @@ export default function TodayHabits() {
       }
       await load({ suppressSpinner: true });
       try {
-        // notify other components (chart, calendar) that habits changed for today
         window.dispatchEvent(new CustomEvent("habits:changed", { detail: { date: localYMD(), habitId: h.id } }))
       } catch {
         /* ignore */
@@ -75,11 +74,18 @@ export default function TodayHabits() {
   if (loading) return <div>Chargement...</div>;
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-wrap justify-center gap-4">
       {items.filter(i => i.scheduledToday).map(h => {
         const percent = h.target > 0 ? Math.min(1, h.completed / h.target) : (h.doneToday ? 1 : 0);
+        const subtitle = h.frequencyType === 'daily'
+          ? (h.doneToday ? "Fait aujourd'hui" : <span className="text-destructive">À faire aujourd'hui</span>)
+          : `${h.completed}/${h.target} cette semaine`;
+
         return (
-          <div key={h.id} className="flex flex-col items-center p-3 bg-card rounded">
+          <div
+            key={h.id}
+            className="flex flex-col items-center p-3 bg-card rounded w-1/3 sm:w-1/2 lg:w-1/3 max-w-[240px] min-w-[140px]"
+          >
             <div className="w-full flex items-center justify-center">
               <button
                 onClick={() => toggleToday(h)}
@@ -99,7 +105,7 @@ export default function TodayHabits() {
                         color={ (h as any).color ?? undefined }
                         center={isPending ? <ToggleSpin/> : <div className="w-6 h-6 text-primary flex items-center justify-center"><Icon /></div>}
                         title={h.name}
-                        subtitle={`${h.completed}/${h.target} this period`}
+                        subtitle={subtitle}
                       />
                     );
                   } catch (e) {
@@ -112,7 +118,7 @@ export default function TodayHabits() {
                         color={ (h as any).color ?? undefined }
                         center={isPending ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : undefined}
                         title={h.name}
-                        subtitle={`${h.completed}/${h.target} this period`}
+                        subtitle={subtitle}
                       />
                     );
                   }

@@ -20,7 +20,7 @@ export default function ChartStat({
       <span className="text-muted-foreground text-xs uppercase tracking-wide">
         {label}
       </span>
-      <div className="text-2xl font-bold">{value.toFixed(1)}%</div>
+      <span className="text-2xl font-bold text-primary">{value.toFixed(1)}%</span>
     </div>
   );
 }
