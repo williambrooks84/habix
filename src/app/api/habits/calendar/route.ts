@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getHabitsByUser, countHabitRunsBetween } from "@/app/lib/habits";
 import { startOfDay, endOfMonth, startOfMonth, addDays } from "date-fns";
 import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
+import type { FrequencyType } from "@/app/types";
 import { toLocalYmd, localDayBounds } from "@/app/lib/date-utils";
 
 export async function GET(request: Request) {
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
       try {
         const freqType = h.frequencyType ?? "daily";
         const config = h.frequencyConfig ?? {};
-        const occ = occurrencesBetween(freqType, config, from, to, h.periodStart ?? null, h.periodEnd ?? null);
+        const occ = occurrencesBetween(freqType as FrequencyType, config, from, to, h.periodStart ?? null, h.periodEnd ?? null);
 
         for (const d of occ) {
           const ymd = toLocalYmd(d);

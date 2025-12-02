@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getHabitsByUser, countHabitRunsBetween } from '@/app/lib/habits';
 import { startOfMonth, endOfMonth, startOfDay, addDays } from 'date-fns';
 import { isScheduledOnDate, occurrencesBetween } from '@/app/lib/recurrence';
+import type { FrequencyType } from "@/app/types";
 
 export async function GET(request: Request) {
   try {
@@ -36,7 +37,7 @@ export async function GET(request: Request) {
         periodTo = addDays(periodTo, 6);
       }
 
-      let target = occurrencesBetween(freqType, config, periodFrom, periodTo, h.periodStart ?? null, h.periodEnd ?? null).length;
+      let target = occurrencesBetween(freqType as FrequencyType, config, periodFrom, periodTo, h.periodStart ?? null, h.periodEnd ?? null).length;
       let completed = await countHabitRunsBetween(h.id, periodFrom, periodTo).catch((e) => {
         console.error('countHabitRunsBetween error for habit', h.id, e);
         return 0;

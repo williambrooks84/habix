@@ -1,8 +1,10 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import { addDays, startOfDay } from "date-fns";
-
 import { getHabitsByUser, countHabitRunsBetween } from "@/app/lib/habits";
+import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
+import type { FrequencyType } from "@/app/types";
+import { toLocalYmd, localDayBounds } from "@/app/lib/date-utils";
 
 const MIN_DAYS = 7;
 const MAX_DAYS = 120;
@@ -24,9 +26,6 @@ function normalizeConfig(input: any) {
   }
   return input;
 }
-
-import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
-import { toLocalYmd, localDayBounds } from "@/app/lib/date-utils";
 
 export async function GET(request: Request) {
   try {
@@ -56,7 +55,7 @@ export async function GET(request: Request) {
         const periodStart = h.periodStart ? new Date(h.periodStart) : null;
         const periodEnd = h.periodEnd ? new Date(h.periodEnd) : null;
 
-        const occ = occurrencesBetween(freqType, config, startDate, endDate, periodStart, periodEnd);
+        const occ = occurrencesBetween(freqType as FrequencyType, config, startDate, endDate, periodStart, periodEnd);
         for (const d of occ) {
           const ymd = toLocalYmd(d);
           if (!ymd) continue;
@@ -89,7 +88,7 @@ export async function GET(request: Request) {
         const periodStart = h.periodStart ? new Date(h.periodStart) : null;
         const periodEnd = h.periodEnd ? new Date(h.periodEnd) : null;
 
-        const occ = occurrencesBetween(freqType, config, startDate, endDate, periodStart, periodEnd);
+        const occ = occurrencesBetween(freqType as FrequencyType, config, startDate, endDate, periodStart, periodEnd);
         for (const d of occ) {
           const ymd = toLocalYmd(d);
           if (!ymd) continue;
