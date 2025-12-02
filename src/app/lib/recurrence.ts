@@ -1,4 +1,3 @@
-// src/app/lib/recurrence.ts
 import { addDays, isSameDay, startOfDay } from 'date-fns';
 import type { FrequencyType, FrequencyConfig } from '@/app/types';
 
@@ -35,6 +34,14 @@ export function isScheduledOnDate(freqType: FrequencyType, config: any, date: Da
     const dom = config?.dayOfMonth;
     if (!dom) return false;
     return d.getDate() === dom;
+  }
+
+  if ((freqType as any) === 'monthly-multi') {
+    const dates = (config?.dates ?? [])
+      .map((n: any) => Number(n))
+      .filter((n: number) => !Number.isNaN(n) && n >= 1 && n <= 31);
+    if (!dates.length) return false;
+    return dates.includes(d.getDate());
   }
 
   return false;

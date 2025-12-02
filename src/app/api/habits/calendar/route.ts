@@ -2,91 +2,8 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import { getHabitsByUser, countHabitRunsBetween } from "@/app/lib/habits";
 import { startOfDay, endOfMonth, startOfMonth, addDays } from "date-fns";
-
-function weekdayNums(days?: number[]) {
-  return (days ?? []).map((d) => Number(d) % 7);
-}
-
-function isScheduledOnDate(
-  freqType: string | null | undefined,
-  config: any,
-  date: Date,
-  periodStart?: Date | null,
-  periodEnd?: Date | null
-) {
-  const d = startOfDay(date);
-  if (periodStart && d < startOfDay(periodStart)) return false;
-  if (periodEnd && d > startOfDay(periodEnd)) return false;
-
-  const ft = freqType ?? "daily";
-
-  if (ft === "daily") {
-    const interval = Number(config?.interval ?? 1) || 1;
-    if (periodStart) {
-      const diff = Math.floor(
-        (d.getTime() - startOfDay(new Date(periodStart)).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return diff >= 0 && diff % interval === 0;
-    }
-    return true;
-  }
-
-  if (ft === "weekly") {
-    const day = config?.day;
-    if (typeof day !== "number") return false;
-    return d.getDay() === (day % 7);
-  }
-
-  if (ft === "weekly-multi") {
-    const days = weekdayNums(config?.days);
-    return days.includes(d.getDay());
-  }
-
-  if (ft === "monthly") {
-    const dom = Number(config?.dayOfMonth);
-    if (!dom) return false;
-    return d.getDate() === dom;
-  }
-
-  if (ft === "monthly-multi") {
-    const dates = (config?.dates ?? []).map((n: any) => Number(n)).filter((n: number) => !isNaN(n) && n >= 1 && n <= 31);
-    if (!dates || dates.length === 0) return false;
-    return dates.includes(d.getDate());
-  }
-
-  return false;
-}
-
-function occurrencesBetween(
-  freqType: string | null | undefined,
-  config: any,
-  from: Date,
-  to: Date,
-  periodStart?: Date | null,
-  periodEnd?: Date | null
-) {
-  const out: Date[] = [];
-  const start = startOfDay(from);
-  const end = startOfDay(to);
-  for (let cur = start; cur <= end; cur = addDays(cur, 1)) {
-    if (isScheduledOnDate(freqType, config, cur, periodStart, periodEnd)) out.push(new Date(cur));
-  }
-  return out;
-}
-
-function toLocalYmd(d?: Date | null) {
-  if (!d) return null;
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${dd}`;
-}
-
-function localDayBounds(d: Date) {
-  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
-  const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-  return { start, end };
-}
+import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
+import { toLocalYmd, localDayBounds } from "@/app/lib/date-utils";
 
 export async function GET(request: Request) {
   try {
@@ -119,7 +36,6 @@ export async function GET(request: Request) {
           const ymd = toLocalYmd(d);
           if (!ymd) continue;
 
-          // count runs using local day bounds to avoid timezone shifts
           const { start: dayStart, end: dayEnd } = localDayBounds(d);
           const doneCount = await countHabitRunsBetween(h.id, dayStart, dayEnd).catch(() => 0);
           const done = doneCount > 0;

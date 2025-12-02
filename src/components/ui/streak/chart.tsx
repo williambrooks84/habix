@@ -5,17 +5,8 @@ import React from "react";
 import { StreakChartProps } from "@/types/ui";
 import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
 import type { FrequencyType } from "@/app/types";
+import { parseYMD, formatYMD } from "@/app/lib/date-utils";
 
-const parseYMD = (s: string) => {
-    const [y, m, d] = s.split('-').map(Number);
-    return new Date(y, (m || 1) - 1, d || 1);
-};
-const formatYMD = (d: Date) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${dd}`;
-};
 
 function StreakChartTooltipContent({ active, payload }: any) {
     if (!active || !payload?.length) return null;

@@ -2,55 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import { getHabitsByUser, countHabitRunsBetween } from '@/app/lib/habits';
 import { startOfMonth, endOfMonth, startOfDay, addDays } from 'date-fns';
-
-function weekdayNums(days?: number[]) {
-  return (days ?? []).map((d) => Number(d) % 7);
-}
-
-function isScheduledOnDate(freqType: string | null | undefined, config: any, date: Date, periodStart?: Date | null, periodEnd?: Date | null) {
-  const d = startOfDay(date);
-  if (periodStart && d < startOfDay(periodStart)) return false;
-  if (periodEnd && d > startOfDay(periodEnd)) return false;
-
-  const ft = freqType ?? 'daily';
-  if (ft === 'daily') {
-    const interval = Number(config?.interval ?? 1) || 1;
-    if (periodStart) {
-      const diff = Math.floor((d.getTime() - startOfDay(new Date(periodStart)).getTime()) / (1000 * 60 * 60 * 24));
-      return diff >= 0 && diff % interval === 0;
-    }
-    return true;
-  }
-
-  if (ft === 'weekly') {
-    const day = config?.day;
-    if (typeof day !== 'number') return false;
-    return d.getDay() === (day % 7);
-  }
-
-  if (ft === 'weekly-multi') {
-    const days = weekdayNums(config?.days);
-    return days.includes(d.getDay());
-  }
-
-  if (ft === 'monthly') {
-    const dom = Number(config?.dayOfMonth);
-    if (!dom) return false;
-    return d.getDate() === dom;
-  }
-
-  return false;
-}
-
-function occurrencesBetween(freqType: string | null | undefined, config: any, from: Date, to: Date, periodStart?: Date | null, periodEnd?: Date | null) {
-  const out: Date[] = [];
-  const start = startOfDay(from);
-  const end = startOfDay(to);
-  for (let cur = start; cur <= end; cur = addDays(cur, 1)) {
-    if (isScheduledOnDate(freqType, config, cur, periodStart, periodEnd)) out.push(new Date(cur));
-  }
-  return out;
-}
+import { isScheduledOnDate, occurrencesBetween } from '@/app/lib/recurrence';
 
 export async function GET(request: Request) {
   try {
@@ -71,15 +23,14 @@ export async function GET(request: Request) {
       const config = h.frequencyConfig ?? {};
       const scheduledToday = isScheduledOnDate(freqType, config, today, h.periodStart ?? null, h.periodEnd ?? null);
 
-      // choose period range (compute week start Monday..Sunday manually)
       let periodFrom: Date;
       let periodTo: Date;
       if ((freqType as string).startsWith('monthly')) {
         periodFrom = startOfMonth(today);
         periodTo = endOfMonth(today);
       } else {
-        const day = today.getDay(); // 0 (Sun) .. 6
-        const diffToMon = (day + 6) % 7; // days since Monday
+        const day = today.getDay();
+        const diffToMon = (day + 6) % 7;
         periodFrom = startOfDay(new Date(today.getFullYear(), today.getMonth(), today.getDate() - diffToMon));
         periodTo = startOfDay(new Date(periodFrom.getFullYear(), periodFrom.getMonth(), periodFrom.getDate()));
         periodTo = addDays(periodTo, 6);
@@ -91,8 +42,6 @@ export async function GET(request: Request) {
         return 0;
       });
       const doneToday = (await countHabitRunsBetween(h.id, today, today).catch(() => 0)) > 0;
-
-      // For daily habits in the Today widget, show a per-day target (1) and completed as today's completion
       if (freqType === 'daily') {
         target = 1;
         completed = doneToday ? 1 : 0;
