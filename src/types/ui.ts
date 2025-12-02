@@ -193,3 +193,16 @@ export type StreakChartProps = {
   frequencyType?: string | null;
   frequencyConfig?: any;
 };
+
+//Recommendation
+
+export type RecommendationListDetailProps = {
+  id: number;
+  title: string;
+  content: string;
+}
+
+export type RecommendationProps = {
+  items: RecommendationListDetailProps[];
+  className?: string;
+};

@@ -40,3 +40,9 @@ export type TodayHabitItem = {
   doneToday: boolean;
   frequencyType?: string;
 };
+
+export type Recommendation = {
+  id: number;
+  title: string;
+  content: string;
+}

@@ -4,7 +4,7 @@ import { MenuOverlayProps } from "@/types/ui";
 import MenuItem from '@/components/ui/menu/menu-item';
 import ThemeToggle from '@/components/ui/theme-toggle/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { CrossIcon, LoginIcon, LogoutIcon, HomeIcon, HabitsIcon, CalendarIcon } from '@/components/ui/icons';
+import { CrossIcon, LoginIcon, LogoutIcon, HomeIcon, HabitsIcon, CalendarIcon, RecommendationIcon } from '@/components/ui/icons';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -31,6 +31,11 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             label: 'Calendrier',
             icon: CalendarIcon,
             onClick: () => router.push('/calendar'),
+        }, 
+        {
+            label: 'Recommandations',
+            icon: RecommendationIcon,
+            onClick: () => router.push('/recommendation'),
         }
     ]
 
