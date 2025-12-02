@@ -4,7 +4,7 @@ import { addDays, startOfDay } from "date-fns";
 import { getHabitsByUser, countHabitRunsBetween } from "@/app/lib/habits";
 import { isScheduledOnDate, occurrencesBetween } from "@/app/lib/recurrence";
 import type { FrequencyType } from "@/app/types";
-import { toLocalYmd, localDayBounds } from "@/app/lib/date-utils";
+import { toLocalYmd, localDayBounds, formatYMD } from "@/app/lib/date-utils";
 
 const MIN_DAYS = 7;
 const MAX_DAYS = 120;
@@ -105,7 +105,7 @@ export async function GET(request: Request) {
 
     const daysData = Array.from({ length: days }).map((_, idx) => {
       const date = addDays(startDate, idx);
-      const key = toLocalYmd(date);
+      const key = toLocalYmd(date) ?? formatYMD(date);
       const scheduledCount = scheduledByDay.get(key)?.size ?? 0;
       const completedCount = completionCounts.get(key) ?? 0;
       const percentage = scheduledCount > 0 ? Number(((completedCount / scheduledCount) * 100).toFixed(1)) : 0;

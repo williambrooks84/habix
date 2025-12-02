@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       try {
       const freqType = h.frequencyType ?? 'daily';
       const config = h.frequencyConfig ?? {};
-      const scheduledToday = isScheduledOnDate(freqType, config, today, h.periodStart ?? null, h.periodEnd ?? null);
+      const scheduledToday = isScheduledOnDate(freqType as FrequencyType, config, today, h.periodStart ?? null, h.periodEnd ?? null);
 
       let periodFrom: Date;
       let periodTo: Date;
