@@ -129,7 +129,6 @@ export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 md:max-w-2/3 lg:max-w-1/2" aria-label="Créer une habitude">
       <div>
-        <FormLabel id="name" label="Nom" />
         <FormUI
           id="name"
           name="name"

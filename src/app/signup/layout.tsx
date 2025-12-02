@@ -5,19 +5,15 @@ export const metadata = {
   title: "Login - Habix",
 };
 
-export default function LoginLayout({ children }: { children: ReactNode }) {
+export default function SignupLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <article
-        className="w-full max-w-md flex flex-col gap-8"
-        role="region"
-        aria-labelledby="signup-heading"
-      >
+    <main className="relative w-full h-full min-h-0">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md flex flex-col gap-8">
         <Header/>
         <section id="signup-content" aria-labelledby="signup-heading">
           {children}
         </section>
-      </article>
+      </div>
     </main>
   );
 }

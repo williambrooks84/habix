@@ -9,7 +9,7 @@ export default function LoginPopin() {
     const { data: session, status } = useSession();
     const pathname = usePathname();
     const router = useRouter();
-    const hidePaths = ["/", "/login"];
+    const hidePaths = ["/", "/login", "/signup"];
     const show = status !== "loading" && !session && Boolean(pathname) && !hidePaths.includes(pathname ?? "");
 
     React.useEffect(() => {
