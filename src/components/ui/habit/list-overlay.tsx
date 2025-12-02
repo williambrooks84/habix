@@ -5,8 +5,23 @@ import { DeleteIcon, CrossIcon } from "../icons";
 import { Button } from "../button";
 import ListDetail from "./list-detail";
 import { ListOverlayProps } from "@/types/ui";
+import { StreakChart } from "../streak/chart";
+import { useEffect, useState } from "react";
 
 export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProps) {
+  const [completedData, setCompletedData] = useState<{ days: string[], periodStart: string | null, periodEnd: string | null, frequencyType: string | null, frequencyConfig: any }>({ days: [], periodStart: null, periodEnd: null, frequencyType: null, frequencyConfig: null });
+  useEffect(() => {
+    if (!item?.id) return;
+    fetch(`/api/habits/completed-days?habitId=${item.id}`)
+      .then(res => res.json())
+      .then(data => setCompletedData({ 
+        days: data.days ?? [], 
+        periodStart: data.periodStart ?? null, 
+        periodEnd: data.periodEnd ?? null,
+        frequencyType: data.frequencyType ?? null,
+        frequencyConfig: data.frequencyConfig ?? null
+      }));
+  }, [item?.id]);
   if (!item) return null;
 
   const rawFreq =
@@ -39,15 +54,15 @@ export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProp
     ? `Du ${formatIsoForUi(item.periodStart)} → ${formatIsoForUi(item.periodEnd)}`
     : single
       ? (() => {
-          try {
-            const d = parseISO(single);
-            const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-            const today = startOfToday();
-            if (dDay < today) return `depuis ${formatIsoForUi(single)}`;
-            return `A partir du ${formatIsoForUi(single)}`;
-          } catch {
-            return formatIsoForUi(single);
-          }
+        try {
+          const d = parseISO(single);
+          const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          const today = startOfToday();
+          if (dDay < today) return `depuis ${formatIsoForUi(single)}`;
+          return `A partir du ${formatIsoForUi(single)}`;
+        } catch {
+          return formatIsoForUi(single);
+        }
       })()
       : "";
 
@@ -72,6 +87,18 @@ export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProp
           <ListDetail title="Période :">{periodLabel}</ListDetail>
           <ListDetail title="Fréquence :">{freqText}</ListDetail>
           <ListDetail title="Motivation :">{item.motivation}</ListDetail>
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <h3 className="text-primary text-base">Streak :</h3>
+          <StreakChart 
+            key={item?.id}
+            completedDays={completedData.days} 
+            periodStart={completedData.periodStart} 
+            periodEnd={completedData.periodEnd}
+            frequencyType={completedData.frequencyType}
+            frequencyConfig={completedData.frequencyConfig}
+          />
         </div>
 
         <Button

@@ -8,11 +8,6 @@ const MIN_DAYS = 7;
 const MAX_DAYS = 120;
 const DEFAULT_DAYS = 30;
 
-type CompletionRow = {
-  habit_id: number;
-  run_date: string;
-};
-
 function clampDays(value: number | null | undefined) {
   if (!value || Number.isNaN(value)) return DEFAULT_DAYS;
   return Math.min(MAX_DAYS, Math.max(MIN_DAYS, value));
@@ -135,7 +130,6 @@ export async function GET(request: Request) {
 
     const habits = await getHabitsByUser(userId);
 
-    // Pre-compute scheduled occurrences per day
     const scheduledByDay = new Map<string, Set<number>>();
 
     for (const h of habits) {
@@ -157,7 +151,6 @@ export async function GET(request: Request) {
       }
     }
 
-    // If there are no habits, return empty range structure for the requested days
     if (!habits.length) {
       const emptyRange = Array.from({ length: days }).map((_, idx) => {
         const day = addDays(startDate, idx);
@@ -171,7 +164,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ days: emptyRange });
     }
 
-    // Count completions per scheduled day using helper
     const completionCounts = new Map<string, number>();
     for (const h of habits) {
       try {
@@ -184,7 +176,6 @@ export async function GET(request: Request) {
         for (const d of occ) {
           const ymd = toLocalYmd(d);
           if (!ymd) continue;
-          // only count if this habit is scheduled for that day (should be true)
           const { start: dayStart, end: dayEnd } = localDayBounds(d);
           const runs = await countHabitRunsBetween(h.id, dayStart, dayEnd).catch(() => 0);
           if (runs > 0) {

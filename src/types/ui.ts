@@ -178,9 +178,18 @@ export type ChartTooltipContentProps = {
 
 //Loading
 
-
 export type LoadingSpinProps = {
   size?: number;
   className?: string;
   "aria-label"?: string;
+};
+
+//Streak
+
+export type StreakChartProps = {
+    completedDays: string[];
+    periodStart?: string | null;
+    periodEnd?: string | null;
+  frequencyType?: string | null;
+  frequencyConfig?: any;
 };

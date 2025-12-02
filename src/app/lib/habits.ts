@@ -148,3 +148,51 @@ export async function updateNextRun(habitId: number, nextRun: Date | string | nu
   `;
   return rows.length > 0;
 }
+
+export async function getCompletedDaysForHabit(habitId: number): Promise<{ days: string[], periodStart: string | null, periodEnd: string | null, frequencyType: string | null, frequencyConfig: any }> {
+  const fmtLocal = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  };
+  const toYMDLocal = (v: any): string => {
+    if (typeof v === 'string') return v.slice(0, 10);
+    const d = new Date(v);
+    d.setHours(0, 0, 0, 0);
+    return fmtLocal(d);
+  };
+  const habitRows = await sql`SELECT period_start, period_end, frequency_type, frequency_config FROM habits WHERE id = ${habitId}`;
+  const habit = habitRows[0];
+  
+  let periodStart: string | null = null;
+  let periodEnd: string | null = null;
+  
+  if (habit?.period_start) {
+    periodStart = toYMDLocal(habit.period_start);
+  }
+  
+  if (habit?.period_end) {
+    periodEnd = toYMDLocal(habit.period_end);
+  }
+
+  const rows = await sql`SELECT run_date FROM habit_runs WHERE habit_id = ${habitId}`;
+  let days = rows.map((row: any) => {
+    return toYMDLocal(row.run_date);
+  });
+  
+  if (periodStart) {
+    days = days.filter((day: string) => day >= periodStart);
+  }
+  if (periodEnd) {
+    days = days.filter((day: string) => day <= periodEnd);
+  }
+  
+  return { 
+    days, 
+    periodStart, 
+    periodEnd,
+    frequencyType: habit?.frequency_type || null,
+    frequencyConfig: habit?.frequency_config || null
+  };
+}
