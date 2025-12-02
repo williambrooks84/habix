@@ -10,7 +10,7 @@ export default async function CreateHabitPage() {
         <div className="flex flex-col px-6">
             <h1 className="text-2xl font-semibold text-foreground">Créer une habitude</h1>
 
-            <section className="mt-6 mb-22">
+            <section className="mt-6 mb-22 md:flex md:flex-col md:items-center">
                 <CreateHabitForm categories={categories} />
             </section>
         </div>

@@ -16,10 +16,21 @@ import { pickIconByName } from '@/app/lib/pick-icon-by-name'
 import { Button } from "@/components/ui/button"
 import { CheckIconMute, CheckIconValid } from "../icons"
 import { ToggleSpin } from "../ToggleSpin"
+import LoadingSpin from "@/components/ui/loading/loading-spin";
 
-export function CalendarHijri() {
+type CalendarHijriProps = {
+  initialData?: Record<string, Array<any>>;
+};
+
+export function CalendarHijri({ initialData }: CalendarHijriProps = {}) {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [dayMap, setDayMap] = React.useState<Record<string, Array<{ id: number; name: string; done: boolean; category?: string | null; color?: string | null }>>>(() => ({}))
+  const [selectedItem, setSelectedItem] = React.useState<number | null>(null)
+  const [dayMap, setDayMap] = React.useState<Record<string, Array<any>>>(initialData ?? {})
+  const [monthLoading, setMonthLoading] = React.useState(false)
+  const [togglingIds, setTogglingIds] = React.useState<number[]>([])
+  const [loading, setLoading] = React.useState(true);
+
+  const monthCache = React.useRef<Record<string, Record<string, Array<any>>>>({});
 
   function toYmd(d?: Date | null) {
     if (!d) return null
@@ -33,8 +44,6 @@ export function CalendarHijri() {
     return toYmd(new Date())
   })
 
-  const [monthLoading, setMonthLoading] = React.useState(false)
-
   const isSelectedInCurrentMonth = React.useMemo(() => {
     if (!selectedYmd) return false
     const parts = selectedYmd.split('-')
@@ -45,14 +54,13 @@ export function CalendarHijri() {
     return y === d.getFullYear() && m === d.getMonth() + 1
   }, [selectedYmd, date])
 
-  const monthCache = React.useRef<Record<string, Record<string, Array<any>>>>({});
-
   React.useEffect(() => {
     const d = date ?? new Date();
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
     const abort = new AbortController();
     setMonthLoading(true);
+    setLoading(true);
 
     const months = [month - 1, month, month + 1].map((m) => {
       let y = year;
@@ -76,6 +84,7 @@ export function CalendarHijri() {
     if (!toFetch.length) {
       setDayMap(cached);
       setMonthLoading(false);
+      setLoading(false);
       return;
     }
 
@@ -102,7 +111,10 @@ export function CalendarHijri() {
       .catch((err) => {
         if ((err as any)?.name !== "AbortError") console.error("Failed to load calendar habits", err);
       })
-      .finally(() => setMonthLoading(false));
+      .finally(() => {
+        setMonthLoading(false);
+        setLoading(false);
+      });
 
     return () => {
       abort.abort();
@@ -116,7 +128,6 @@ export function CalendarHijri() {
   }, [date])
 
   const itemsForSelected: Array<{ id: number; name: string; done: boolean; category?: string | null; color?: string | null }> = selectedYmd ? (dayMap[selectedYmd] ?? []) : []
-  const [togglingIds, setTogglingIds] = React.useState<number[]>([])
 
   async function toggleCompletion(item: { id: number; name: string; done: boolean }) {
     if (!selectedYmd) return
@@ -164,6 +175,15 @@ export function CalendarHijri() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px] py-8">
+        <LoadingSpin size={48} />
+        <span className="mt-2 text-lg text-muted-foreground">Chargement du calendrier…</span>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="mx-auto w-fit">
@@ -182,7 +202,7 @@ export function CalendarHijri() {
               const allDone = items.length > 0 && items.every((it: any) => it.done)
               const someNotDone = items.length > 0 && !allDone
 
-              const isPastOrToday = (() => {
+              const isPastOrToday: boolean = (() => {
                 if (!day) return false
                 const d = new Date(day.getFullYear(), day.getMonth(), day.getDate())
                 const t = new Date()
@@ -226,18 +246,18 @@ export function CalendarHijri() {
             <p className="text-sm text-primary text-center mt-1">N'oubliez pas de réaliser vos habitudes du jour</p>
           )}
           {monthLoading && isSelectedInCurrentMonth ? (
-            <p className="text-sm text-center text-muted-foreground">Chargement...</p>
+            <Loading/>
           ) : (selectedYmd ? (dayMap[selectedYmd] ?? []) : []).length === 0 ? (
             <p className="text-sm text-center text-muted-foreground">Aucune habitude pour cette date n'a été créée.</p>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center justify-center gap-4">
               {itemsForSelected.map((it: { id: number; name: string; done: boolean; category?: string | null; color?: string | null }) => {
                 const Icon = pickIconByName(it.category ?? it.name ?? '')
                 const toggling = togglingIds.includes(it.id)
                 const isSelectedToday = selectedYmd === toYmd(new Date())
                 const nameStyle = it.color ? ({ ['--habit-color' as any]: it.color } as React.CSSProperties) : undefined;
                 return (
-                    <div key={`${selectedYmd}-${it.id}`} className="flex items-center gap-3" style={nameStyle}>
+                    <div key={`${selectedYmd}-${it.id}`} className="flex items-center gap-3 w-full max-w-md" style={nameStyle}>
                       <span className="flex items-center justify-center">
                         <Icon />
                       </span>

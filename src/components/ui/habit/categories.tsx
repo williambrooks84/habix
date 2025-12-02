@@ -46,7 +46,7 @@ export default function Categories({ items, categories, onSelect, className, sel
      return (
          <div
              id={id}
-             className={clsx('flex flex-wrap justify-center gap-6', className)}
+             className={clsx('flex flex-wrap justify-center gap-4', className)}
              style={maxWidth ? { ['--cat-min-w' as any]: `${maxWidth}px` } : undefined}
          >
              {resolved.map((it) => {
@@ -65,7 +65,7 @@ export default function Categories({ items, categories, onSelect, className, sel
                          }}
                          aria-pressed={isSelected ? 'true' : 'false'}
                          className={clsx(
-                             'flex flex-col items-center gap-2 px-4 py-11 rounded-xl border-3 transition-colors focus:outline-none min-w-[var(--cat-min-w)]',
+                             'flex flex-col items-center gap-2 px-4 py-8 rounded-xl border-2 transition-colors focus:outline-none w-[calc(50%-0.5rem)] sm:w-auto sm:min-w-[var(--cat-min-w)]',
                              isSelected
                                  ? 'text-foreground border-primary'
                                  : 'bg-transparent text-foreground border-grey'

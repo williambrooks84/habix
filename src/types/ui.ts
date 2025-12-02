@@ -1,3 +1,5 @@
+import type { FrequencyType, FrequencyConfig } from '@/app/types';
+
 export type LogosProps = {
   variant?: 1 | 2;
   mode?: "auto" | "light" | "dark";
@@ -133,6 +135,16 @@ export type DatePickerProps = {
   maxDate?: Date;
 };
 
+type FrequencyValue = { type: FrequencyType; config?: FrequencyConfig };
+
+export type FrequencySelectProps = {
+  value: FrequencyValue;
+  onChange: (v: FrequencyValue) => void;
+  className?: string;
+  periodStart?: string | null;
+  periodEnd?: string | null; 
+};
+
 export type ListOverlayProps = {
   item: any | null;
   onClose: () => void;
@@ -161,4 +173,14 @@ export type ChartTooltipContentProps = {
   nameKey?: string;
   valueFormatter?: (value: any, name: any) => React.ReactNode;
   labelFormatter?: (label: string) => React.ReactNode;
+};
+
+
+//Loading
+
+
+export type LoadingSpinProps = {
+  size?: number;
+  className?: string;
+  "aria-label"?: string;
 };

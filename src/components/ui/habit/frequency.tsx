@@ -1,15 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { FrequencyType, FrequencyConfig } from '@/app/types';
+import { FrequencySelectProps } from '@/types/ui';
 
-type FrequencyValue = { type: FrequencyType; config?: FrequencyConfig };
-
-type FrequencySelectProps = {
-  value: FrequencyValue;
-  onChange: (v: FrequencyValue) => void;
-  className?: string;
-  periodStart?: string | null;
-  periodEnd?: string | null; 
-};
 
 const WEEKDAY_LABELS = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
 
@@ -33,7 +25,6 @@ export default function FrequencySelect({
     const e = parseDateSafe(periodEnd);
     if (!s || !e) return null;
     const msPerDay = 1000 * 60 * 60 * 24;
-    // inclusive difference
     const diff = Math.floor((e.setHours(0,0,0,0) - s.setHours(0,0,0,0)) / msPerDay) + 1;
     return diff > 0 ? diff : null;
   }, [periodStart, periodEnd]);
@@ -46,12 +37,11 @@ export default function FrequencySelect({
   function getDefaultDaysForPeriod() {
     const s = parseDateSafe(periodStart);
     if (!s || !periodLength) return [1, 2, 3, 4, 5];
-    const startDay = s.getDay(); // 0..6
+    const startDay = s.getDay();
     const days: number[] = [];
     for (let i = 0; i < Math.min(periodLength, 7); i++) {
       days.push((startDay + i) % 7);
     }
-    // ensure unique & sorted
     return Array.from(new Set(days)).sort((a, b) => a - b);
   }
 
@@ -118,7 +108,6 @@ export default function FrequencySelect({
     const days = ((value.config as { days?: number[] })?.days ?? []) as number[];
     const has = days.includes(day);
     const next = has ? days.filter(d => d !== day) : [...days, day];
-    // dedupe & sort
     const nextUnique = Array.from(new Set(next)).sort((a, b) => a - b);
     if (nextUnique.length > maxSelectableDays) {
       setWarning(`La période est de ${periodLength} jour(s) — vous ne pouvez sélectionner que jusqu'à ${maxSelectableDays} jour(s).`);
@@ -129,7 +118,6 @@ export default function FrequencySelect({
 
   function toggleSingleWeekday(day: number) {
     setWarning(null);
-    // single weekday unaffected by max selectable, but warn if period <1? not necessary
     const currentDay = (value.config as any)?.day;
     if (currentDay === day) {
       onChange({ type: 'weekly', config: {} });
@@ -169,7 +157,6 @@ export default function FrequencySelect({
       );
     }
 
-    // single-weekday (weekly) use same button UI but only one can be active
     return (
       <div className="mt-2 grid grid-cols-7 gap-1">
         {WEEKDAY_LABELS.map((lbl, i) => {
@@ -193,9 +180,10 @@ export default function FrequencySelect({
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium mb-1">Fréquence</label>
+      <label htmlFor="frequency" className="block text-sm font-medium mb-1">Fréquence</label>
       <select
-        className="w-full border rounded px-3 py-2 text-foreground bg-background"
+        id="frequency"
+        className="w-full border-3 border-foreground rounded-3xl px-3 py-2 text-foreground bg-background"
         value={value.type}
         onChange={(e) => setType(e.target.value as FrequencyType)}
         aria-label="Choisir la fréquence"
@@ -206,14 +194,11 @@ export default function FrequencySelect({
         <option value="monthly">1 fois par mois</option>
         <option value="monthly-multi">Plusieurs fois par mois</option>
       </select>
-
       {(value.type === 'weekly' || value.type === 'weekly-multi') &&
         renderWeekdaySelector(value.type === 'weekly-multi')
       }
-
       {value.type === 'monthly' && renderMonthDatePicker(false)}
       {value.type === 'monthly-multi' && renderMonthDatePicker(true)}
-
       {warning && <p className="text-xs text-amber-600 mt-2">{warning}</p>}
     </div>
   );

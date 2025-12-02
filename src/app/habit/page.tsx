@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSession } from 'next-auth/react';
 import HabitList from '@/components/habit/habit-list';
-import Loading from '@/components/ui/loading';
+import Loading from '@/components/ui/loading/loading';
 import HomeDisconnected from '@/components/home-disconnected';
 import NoHabit from '@/components/ui/habit/no-habit';
 import AddHabbitButton from '@/components/ui/habit/add-habit-button';

@@ -29,7 +29,7 @@ export default function DatePicker({
   startDate,
   endDate,
   onChange,
-  label = "Dates",
+  label = "",
   allowRange = true,
   minDate,
   maxDate,

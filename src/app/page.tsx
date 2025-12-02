@@ -2,12 +2,9 @@
 
 import React from 'react';
 import { useSession } from 'next-auth/react';
-import Loading from '@/components/ui/loading';
+import Loading from '@/components/ui/loading/loading';
 import HomeDisconnected from '@/components/home-disconnected';
 import NoHabit from '@/components/ui/habit/no-habit';
-import AddHabbitButton from '@/components/ui/habit/add-habit-button';
-import HabitList from '@/components/habit/habit-list';
-import { pickIconByName } from './lib/pick-icon-by-name';
 import TodayHabits from '@/components/habit/today-habits';
 import { ChartLineInteractive } from '@/components/ui/evolution/chart';
 
@@ -44,9 +41,9 @@ export default function Home() {
 
   if (status === 'loading') return <Loading />;
 
-  if (!session) return <HomeDisconnected />;
-
   if (loadingHabits) return <Loading />;
+
+  if (!session) return <HomeDisconnected />;
 
   const hasHabits = Array.isArray(habits) && habits.length > 0;
 

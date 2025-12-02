@@ -92,7 +92,7 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
 
             <nav
                 ref={overlayRef}
-                className={`fixed top-0 left-0 w-2/3 h-full z-50 bg-background/90 backdrop-blur-md rounded-md shadow-lg p-4 transform transition-transform duration-200 ease-out ${active ? 'translate-x-0' : '-translate-x-full'}`}
+                className={`fixed top-0 left-0 w-2/3 sm:w-1/2 md:w-1/3 lg:max-w-sm xl:max-w-md h-full z-50 bg-background/90 backdrop-blur-md rounded-md shadow-lg p-4 transform transition-transform duration-200 ease-out ${active ? 'translate-x-0' : '-translate-x-full'}`}
                 aria-label="Navigation principale"
                 onClick={(e) => e.stopPropagation()}
             >
@@ -118,17 +118,21 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
 
                     {session?.user ? (
                         <MenuItem>
-                            <Button size="small" onClick={wrapAndClose(() => signOut())}>
-                                <LogoutIcon />
-                                <span className="ml-2">Se déconnecter</span>
-                            </Button>
+                            <div className="flex justify-center w-full">
+                                <Button size="small" onClick={wrapAndClose(() => signOut())}>
+                                    <LogoutIcon />
+                                    <span className="ml-2">Se déconnecter</span>
+                                </Button>
+                            </div>
                         </MenuItem>
                     ) : (
                         <MenuItem>
-                            <Button size="small" onClick={wrapAndClose(() => router.push('/login'))}>
-                                <LoginIcon />
-                                <span className="ml-2">Se connecter</span>
-                            </Button>
+                            <div className="flex justify-center w-full">
+                                <Button size="small" onClick={wrapAndClose(() => router.push('/login'))}>
+                                    <LoginIcon />
+                                    <span className="ml-2">Se connecter</span>
+                                </Button>
+                            </div>
                         </MenuItem>
                     )}
                 </ul>
