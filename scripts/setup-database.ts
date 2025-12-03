@@ -39,6 +39,14 @@ async function setupDatabase() {
 
     console.log('✅ Users table created successfully!');
 
+    // Add profile_picture column if it doesn't exist
+    await sql`
+      ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS profile_picture TEXT
+    `;
+
+    console.log('✅ Profile picture column added (or already exists)');
+
     // Verify the table was created
     const result = await sql`
       SELECT table_name 
