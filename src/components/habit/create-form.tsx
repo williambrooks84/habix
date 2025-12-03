@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import FormUI from "@/components/ui/habit/form-ui";
 import Categories from "@/components/ui/habit/categories";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import type { FrequencyType, FrequencyConfig } from "@/app/types";
 
 export default function CreateHabitForm({ categories, habit }: HabitFormProps) {
   const router = useRouter();
-  const [name, setName] = React.useState("");
+  const searchParams = useSearchParams();
+  const initialName = searchParams?.get("name") ?? "";
+  const [name, setName] = React.useState(initialName);
   const [categoryId, setCategoryId] = React.useState<number | null>(null);
   const [motivation, setMotivation] = React.useState("");
   const [loading, setLoading] = React.useState(false);

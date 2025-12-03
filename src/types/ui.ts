@@ -214,3 +214,10 @@ export type ToastProps = {
     title: string;
     message: string;
 };
+
+export interface ToastModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  content: string;
+}
