@@ -206,3 +206,11 @@ export type RecommendationProps = {
   items: RecommendationListDetailProps[];
   className?: string;
 };
+
+
+//Toast
+
+export type ToastProps = {
+    title: string;
+    message: string;
+};
