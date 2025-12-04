@@ -4,8 +4,10 @@ import ProgressCircle from '../ui/habit/progress-circle';
 import { ToggleSpin } from '../ui/ToggleSpin';
 import { pickIconByName } from '@/app/lib/pick-icon-by-name';
 import { TodayHabitItem } from '@/app/lib/definitions';
+import { usePoints } from '@/components/wrappers/PointsContext';
 
 export default function TodayHabits() {
+  const { refreshPoints } = usePoints();
   const [items, setItems] = useState<TodayHabitItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingIds, setPendingIds] = useState<Array<number>>([]);
@@ -44,6 +46,7 @@ export default function TodayHabits() {
           console.error('mark complete failed', res.status, text);
           throw new Error('Failed to mark complete');
         }
+        refreshPoints();
       } else {
         const res = await fetch(`/api/habits/${h.id}/complete`, {
           method: 'DELETE',
@@ -56,6 +59,7 @@ export default function TodayHabits() {
           console.error('undo complete failed', res.status, text);
           throw new Error('Failed to undo completion');
         }
+        refreshPoints();
       }
       await load({ suppressSpinner: true });
       try {

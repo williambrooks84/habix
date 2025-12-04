@@ -18,14 +18,15 @@ import { CheckIconMute, CheckIconValid } from "../icons"
 import { ToggleSpin } from "../ToggleSpin"
 import LoadingSpin from "@/components/ui/loading/loading-spin";
 import Loading from "@/components/ui/loading/loading";
+import { usePoints } from '@/components/wrappers/PointsContext';
 
 export type CalendarHijriProps = {
   initialData?: Record<string, Array<any>>;
 };
 
 export function CalendarHijri({ initialData }: CalendarHijriProps) {
+  const { refreshPoints } = usePoints();
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [selectedItem, setSelectedItem] = React.useState<number | null>(null);
   const [dayMap, setDayMap] = React.useState<Record<string, Array<any>>>(initialData ?? {});
   const [togglingIds, setTogglingIds] = React.useState<number[]>([]);
   const [selectedYmd, setSelectedYmd] = React.useState<string | null>(() => toYmd(new Date()));
@@ -99,6 +100,7 @@ export function CalendarHijri({ initialData }: CalendarHijriProps) {
           credentials: 'same-origin',
         })
         if (!res.ok) throw new Error('Failed to remove completion')
+        refreshPoints();
       } else {
         const res = await fetch(`/api/habits/${id}/complete`, {
           method: 'POST',
@@ -107,6 +109,7 @@ export function CalendarHijri({ initialData }: CalendarHijriProps) {
           credentials: 'same-origin',
         })
         if (!res.ok) throw new Error('Failed to add completion')
+        refreshPoints();
       }
 
       setDayMap((prev) => {
@@ -115,15 +118,6 @@ export function CalendarHijri({ initialData }: CalendarHijriProps) {
         next[selectedYmd] = arr
         return next
       })
-      try {
-        try {
-          window.dispatchEvent(new CustomEvent("habits:changed", { detail: { date: selectedYmd, habitId: id } }))
-        } catch {
-          // ignore
-        }
-      } catch {
-        // ignore
-      }
     } catch (err) {
       console.error('Toggle completion error', err)
     } finally {

@@ -223,3 +223,8 @@ export interface ToastModalProps {
 }
 
 //Profile
+
+export interface PointsContextType {
+  pointsVersion: number;
+  refreshPoints: () => void;
+}

@@ -47,6 +47,23 @@ async function setupDatabase() {
 
     console.log('✅ Profile picture column added (or already exists)');
 
+    // Minimal points support: points column (default 0) and tiny audit table
+    await sql`
+      ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS points integer NOT NULL DEFAULT 0
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS point_events (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        points INTEGER NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
+
+    console.log('✅ Points column and simple point_events table created (or already exist)');
+
     // Verify the table was created
     const result = await sql`
       SELECT table_name 

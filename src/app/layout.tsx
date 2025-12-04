@@ -4,7 +4,8 @@ import SessionProviderWrapper from "@/components/wrappers/SessionProviderWrapper
 import Header from '@/components/header';
 import AddHabitButton from '@/components/ui/habit/add-habit-button';
 import LoginPopin from '@/components/ui/auth/login-popin';
-import { ProfilePictureProvider } from '@/components/wrappers/ProfilePictureContext';
+import { ProfilePictureProvider } from "@/components/wrappers/ProfilePictureContext";
+import { PointsProvider } from '@/components/wrappers/PointsContext';
 
 export const metadata: Metadata = {
   title: "Habix - Accueil",
@@ -21,12 +22,14 @@ export default function RootLayout({
       <body className="antialiased">
         <SessionProviderWrapper>
           <ProfilePictureProvider>
-            <Header />
-            <main className="mt-14 h-[calc(100vh-56px)]">
-              {children}
-            </main>
-            <AddHabitButton />
-            <LoginPopin />
+            <PointsProvider>
+              <Header />
+              <main className="mt-14 h-[calc(100vh-56px)]">
+                {children}
+              </main>
+              <AddHabitButton />
+              <LoginPopin />
+            </PointsProvider>
           </ProfilePictureProvider>
         </SessionProviderWrapper>
       </body>

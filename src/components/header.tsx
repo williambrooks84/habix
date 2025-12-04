@@ -7,6 +7,7 @@ import { getInitialTheme, applyTheme } from '@/app/lib/theme-toggle';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/profile/avatar';
 import { useSession } from 'next-auth/react';
+import PointsDisplay from '@/components/ui/profile/points-display';
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
@@ -44,14 +45,17 @@ export default function Header() {
             >
               <BurgerMenuIcon />
             </button>
-            <button
-              type="button"
-              aria-label="Votre profil"
-              onClick={() => router.push('/profile')}
-              className="rounded-md p-2 hover:bg-muted/10"
-            >
-              {status === 'authenticated' ? <Avatar /> : <ProfileIcon />}
-            </button>
+            <div className="flex items-center gap-3">
+              {status === 'authenticated' && <PointsDisplay />}
+              <button
+                type="button"
+                aria-label="Votre profil"
+                onClick={() => router.push('/profile')}
+                className="rounded-md p-2 hover:bg-muted/10"
+              >
+                {status === 'authenticated' ? <Avatar /> : <ProfileIcon />}
+              </button>
+            </div>
           </div>
         )}
       </header>
