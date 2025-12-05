@@ -1,3 +1,5 @@
+import { BadgeIcons } from "@/components/ui/icons";
+
 export interface User {
   id: number;
   firstName: string;
@@ -40,3 +42,11 @@ export type FrequencyConfig =
   | { interval?: number }
   | { days?: number[] }
   | { dayOfMonth?: number } 
+
+export type Badge = {
+  id: string;
+  name: string;
+  description: string;
+  points_required: number;
+  icon: keyof typeof BadgeIcons | null;
+};

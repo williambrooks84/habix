@@ -240,6 +240,46 @@ async function setupDatabase() {
     console.error('❌ Error inserting recommendations:', err);
     process.exit(1);
   }
+
+  // Create badges table
+  await sql`
+    CREATE TABLE IF NOT EXISTS badges (
+      id VARCHAR(32) PRIMARY KEY,
+      name VARCHAR(64) NOT NULL,
+      description TEXT NOT NULL,
+      points_required INTEGER NOT NULL
+    )
+  `;
+
+  console.log('✅ Badges table created (or already exists)');
+
+  // Insert default badges
+  await sql`
+    INSERT INTO badges (id, name, description, points_required) VALUES
+      ('bronze',   'Bronze',   '5 points',      5),
+      ('silver',   'Argent',   '10 points',     10),
+      ('gold',     'Or',       '25 points',     25),
+      ('platinum', 'Platine',  '50 points',     50),
+      ('diamond',  'Diamant',  '100 points',    100),
+      ('master',   'Maître',   '250 points',    250),
+      ('legend',   'Légende',  '500 points',    500),
+      ('mythic',   'Mythique', '1000 points',   1000)
+    ON CONFLICT (id) DO NOTHING
+  `;
+
+  console.log('✅ Default badges inserted');
+
+  // Create user_badges join table
+  await sql`
+    CREATE TABLE IF NOT EXISTS user_badges (
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      badge_id VARCHAR(32) REFERENCES badges(id) ON DELETE CASCADE,
+      awarded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (user_id, badge_id)
+    )
+  `;
+
+  console.log('✅ user_badges table created (or already exists)');
 }
 
 setupDatabase();
