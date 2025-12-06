@@ -46,3 +46,11 @@ export type Recommendation = {
   title: string;
   content: string;
 }
+
+export type UserBadge = {
+  id: string
+  name: string
+  description: string
+  points_required: number
+  awarded_at: string
+}

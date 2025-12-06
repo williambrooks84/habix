@@ -1,4 +1,5 @@
 import sql from './database'
+import { awardBadgesForUser } from './badges'
 
 export async function createHabitRunAndAwardPoints(userId: number, habitId: number, runDate?: string) {
   const date = runDate ?? new Date().toISOString().slice(0, 10);
@@ -50,6 +51,12 @@ export async function createHabitRunAndAwardPoints(userId: number, habitId: numb
       }
 
       await sql`COMMIT`;
+      // After committing points updates, award any badges the user now qualifies for
+      try {
+        await awardBadgesForUser(userId);
+      } catch (e) {
+        console.error('awardBadgesForUser error', e);
+      }
       return { ok: true, alreadyExists: false, dayBonusAwarded };
     } catch (innerErr) {
       await sql`ROLLBACK`;
@@ -72,6 +79,13 @@ export async function awardPointsForCompletion(userId: number, habitId: number, 
     await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, 1)`;
     await sql`UPDATE users SET points = points + 1 WHERE id = ${userId}`;
 
+    // Award badges if user reached new thresholds
+    try {
+      await awardBadgesForUser(userId);
+    } catch (e) {
+      console.error('awardBadgesForUser error', e);
+    }
+
     return { ok: true, dayBonusAwarded: false };
   } catch (err) {
     console.error('awardPointsForCompletion error', err);
@@ -85,6 +99,8 @@ export async function removePointsForCompletion(userId: number, habitId: number,
     await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, -1)`;
     await sql`UPDATE users SET points = points - 1 WHERE id = ${userId}`;
 
+    // Note: we only award badges when points increase. If you want to remove badges
+    // when points drop below thresholds, implement a removal flow here.
     return { ok: true, dayBonusRemoved: false };
   } catch (err) {
     console.error('removePointsForCompletion error', err);
