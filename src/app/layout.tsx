@@ -1,3 +1,4 @@
+import React from 'react'
 import type { Metadata } from "next";
 import "./globals.css";
 import SessionProviderWrapper from "@/components/wrappers/SessionProviderWrapper";
@@ -6,6 +7,8 @@ import AddHabitButton from '@/components/ui/habit/add-habit-button';
 import LoginPopin from '@/components/ui/auth/login-popin';
 import { ProfilePictureProvider } from "@/components/wrappers/ProfilePictureContext";
 import { PointsProvider } from '@/components/wrappers/PointsContext';
+import ToastContainer from '@/components/ui/toasts/toast-container';
+import BadgesToast from '@/components/ui/badges/badges-toast';
 
 export const metadata: Metadata = {
   title: "Habix - Accueil",
@@ -24,6 +27,10 @@ export default function RootLayout({
           <ProfilePictureProvider>
             <PointsProvider>
               <Header />
+              <React.Suspense fallback={null}>
+                <BadgesToast />
+                <ToastContainer />
+              </React.Suspense>
               <main className="mt-14 h-[calc(100vh-56px)]">
                 {children}
               </main>

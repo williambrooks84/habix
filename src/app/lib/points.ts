@@ -4,7 +4,7 @@ import { awardBadgesForUser } from './badges'
 export async function createHabitRunAndAwardPoints(userId: number, habitId: number, runDate?: string) {
   const date = runDate ?? new Date().toISOString().slice(0, 10);
   try {
-    let dayBonusAwarded = false;
+    // daily bonus removed — no longer tracking dayBonusAwarded
     await sql`BEGIN`;
 
     try {
@@ -17,47 +17,19 @@ export async function createHabitRunAndAwardPoints(userId: number, habitId: numb
 
       if (!inserted || inserted.length === 0) {
         await sql`ROLLBACK`;
-        return { ok: true, alreadyExists: true, dayBonusAwarded: false };
+        return { ok: true, alreadyExists: true };
       }
 
-      await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, 1)`;
       await sql`UPDATE users SET points = points + 1 WHERE id = ${userId}`;
 
-      const activeRow = await sql`SELECT COUNT(*)::int AS c FROM habits WHERE user_id = ${userId}`;
-      const activeCount = activeRow[0]?.c ?? 0;
-
-      if (activeCount > 0) {
-        const completedRow = await sql`
-          SELECT COUNT(DISTINCT habit_id)::int AS c
-          FROM habit_runs
-          WHERE user_id = ${userId} AND run_date = ${date}::date
-        `;
-        const completedCount = completedRow[0]?.c ?? 0;
-
-        if (completedCount >= activeCount) {
-          const alreadyRow = await sql`
-            SELECT 1 FROM point_events
-            WHERE user_id = ${userId} AND points = 5 AND (created_at::date) = ${date}::date
-            LIMIT 1
-          `;
-          const already = Array.isArray(alreadyRow) && alreadyRow.length > 0;
-
-          if (!already) {
-            await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, 5)`;
-            await sql`UPDATE users SET points = points + 5 WHERE id = ${userId}`;
-            dayBonusAwarded = true;
-          }
-        }
-      }
-
       await sql`COMMIT`;
-      // After committing points updates, award any badges the user now qualifies for
+      let awardedBadges = [] as Array<{ id: string; name: string }>;
       try {
-        await awardBadgesForUser(userId);
+        awardedBadges = await awardBadgesForUser(userId);
       } catch (e) {
         console.error('awardBadgesForUser error', e);
       }
-      return { ok: true, alreadyExists: false, dayBonusAwarded };
+      return { ok: true, alreadyExists: false, awardedBadges };
     } catch (innerErr) {
       await sql`ROLLBACK`;
       throw innerErr;
@@ -76,17 +48,15 @@ export async function getUserPoints(userId: number) {
 export async function awardPointsForCompletion(userId: number, habitId: number, runDate?: string) {
   const date = runDate ?? new Date().toISOString().slice(0, 10);
   try {
-    await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, 1)`;
     await sql`UPDATE users SET points = points + 1 WHERE id = ${userId}`;
 
-    // Award badges if user reached new thresholds
     try {
-      await awardBadgesForUser(userId);
+      const awardedBadges = await awardBadgesForUser(userId);
+      return { ok: true, awardedBadges };
     } catch (e) {
       console.error('awardBadgesForUser error', e);
+      return { ok: true, awardedBadges: [] };
     }
-
-    return { ok: true, dayBonusAwarded: false };
   } catch (err) {
     console.error('awardPointsForCompletion error', err);
     return { ok: false, error: String(err) };
@@ -96,12 +66,9 @@ export async function awardPointsForCompletion(userId: number, habitId: number, 
 export async function removePointsForCompletion(userId: number, habitId: number, runDate?: string) {
   const date = runDate ?? new Date().toISOString().slice(0, 10);
   try {
-    await sql`INSERT INTO point_events (user_id, points) VALUES (${userId}, -1)`;
     await sql`UPDATE users SET points = points - 1 WHERE id = ${userId}`;
 
-    // Note: we only award badges when points increase. If you want to remove badges
-    // when points drop below thresholds, implement a removal flow here.
-    return { ok: true, dayBonusRemoved: false };
+    return { ok: true };
   } catch (err) {
     console.error('removePointsForCompletion error', err);
     return { ok: false, error: String(err) };

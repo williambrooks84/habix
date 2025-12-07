@@ -7,7 +7,7 @@ import HomeDisconnected from '@/components/home-disconnected';
 import NoHabit from '@/components/ui/habit/no-habit';
 import TodayHabits from '@/components/habit/today-habits';
 import { ChartLineInteractive } from '@/components/ui/evolution/chart';
-import { Toast } from '@/components/ui/recommendation/toast';
+import { Toast } from '@/components/ui/recommendation/recommendation-toast';
 
 export default function Home() {
   const { data: session, status } = useSession();

@@ -116,7 +116,7 @@ export type HabitListItem = {
   periodStart?: string | null;
   periodEnd?: string | null;
   frequencyType?: string | null;
-  color? : string | null;
+  color?: string | null;
   onClick?: (id: number | string) => void;
 };
 
@@ -130,7 +130,7 @@ export type DatePickerProps = {
   endDate?: string | null;
   onChange: (payload: { startDate: string | null; endDate: string | null }) => void;
   label?: string;
-  allowRange?: boolean; 
+  allowRange?: boolean;
   minDate?: Date;
   maxDate?: Date;
 };
@@ -142,7 +142,7 @@ export type FrequencySelectProps = {
   onChange: (v: FrequencyValue) => void;
   className?: string;
   periodStart?: string | null;
-  periodEnd?: string | null; 
+  periodEnd?: string | null;
 };
 
 export type ListOverlayProps = {
@@ -151,7 +151,7 @@ export type ListOverlayProps = {
   onDelete: (id: string | number) => void;
 };
 
-export  type ListDetailProps = {
+export type ListDetailProps = {
   title: string;
   children: React.ReactNode;
 };
@@ -187,9 +187,9 @@ export type LoadingSpinProps = {
 //Streak
 
 export type StreakChartProps = {
-    completedDays: string[];
-    periodStart?: string | null;
-    periodEnd?: string | null;
+  completedDays: string[];
+  periodStart?: string | null;
+  periodEnd?: string | null;
   frequencyType?: string | null;
   frequencyConfig?: any;
 };
@@ -211,8 +211,8 @@ export type RecommendationProps = {
 //Toast
 
 export type ToastProps = {
-    title: string;
-    message: string;
+  title: string;
+  message: string;
 };
 
 export interface ToastModalProps {
@@ -221,6 +221,10 @@ export interface ToastModalProps {
   title: string;
   content: string;
 }
+
+export type BadgeToast = { id: string; title: string; message?: string; type: 'badge' }
+export type RecommendationToast = { id: string; title: string; message: string; type: 'recommendation'; onClose: () => void; onClick: () => void }
+export type Toast = BadgeToast | RecommendationToast
 
 //Profile
 

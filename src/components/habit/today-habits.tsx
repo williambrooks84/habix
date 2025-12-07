@@ -41,11 +41,18 @@ export default function TodayHabits() {
           body: JSON.stringify({ runDate: localYMD() }),
           credentials: 'same-origin'
         });
+        const json = await res.json().catch(() => ({}));
         if (!res.ok) {
           const text = await res.text().catch(() => '');
           console.error('mark complete failed', res.status, text);
           throw new Error('Failed to mark complete');
         }
+        try {
+          const awarded = json?.pointsAwarded?.awardedBadges ?? json?.awardedBadges ?? [];
+          if (Array.isArray(awarded) && awarded.length > 0) {
+            window.dispatchEvent(new CustomEvent('badge:awarded', { detail: awarded }));
+          }
+        } catch { }
         refreshPoints();
       } else {
         const res = await fetch(`/api/habits/${h.id}/complete`, {
@@ -106,8 +113,8 @@ export default function TodayHabits() {
                         percent={h.frequencyType === 'daily' ? (h.doneToday ? 1 : 0) : percent}
                         size={64}
                         showLabel={false}
-                        color={ (h as any).color ?? undefined }
-                        center={isPending ? <ToggleSpin/> : <div className="w-6 h-6 text-primary flex items-center justify-center"><Icon /></div>}
+                        color={(h as any).color ?? undefined}
+                        center={isPending ? <ToggleSpin /> : <div className="w-6 h-6 text-primary flex items-center justify-center"><Icon /></div>}
                         title={h.name}
                         subtitle={subtitle}
                       />
@@ -119,7 +126,7 @@ export default function TodayHabits() {
                         percent={h.frequencyType === 'daily' ? (h.doneToday ? 1 : 0) : percent}
                         size={64}
                         showLabel={false}
-                        color={ (h as any).color ?? undefined }
+                        color={(h as any).color ?? undefined}
                         center={isPending ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /> : undefined}
                         title={h.name}
                         subtitle={subtitle}

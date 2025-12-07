@@ -108,7 +108,14 @@ export function CalendarHijri({ initialData }: CalendarHijriProps) {
           body: JSON.stringify({ runDate: selectedYmd }),
           credentials: 'same-origin',
         })
+        const json = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error('Failed to add completion')
+        try {
+          const awarded = json?.pointsAwarded?.awardedBadges ?? json?.awardedBadges ?? [];
+          if (Array.isArray(awarded) && awarded.length > 0) {
+            window.dispatchEvent(new CustomEvent('badge:awarded', { detail: awarded }));
+          }
+        } catch {}
         refreshPoints();
       }
 
