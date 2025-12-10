@@ -277,6 +277,14 @@ async function setupDatabase() {
   `;
 
   console.log('✅ user_badges table created (or already exists)');
+
+  // Add is_blocked column if it doesn't exist
+  await sql`
+    ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN NOT NULL DEFAULT false
+  `;
+
+  console.log('✅ is_blocked column added (or already exists)');
 }
 
 setupDatabase();

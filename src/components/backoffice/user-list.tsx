@@ -2,8 +2,10 @@
 
 import React from 'react'
 import Loading from '@/components/ui/loading/loading'
-import UserRow from './user-row'
+import UserRow from '../ui/backoffice/user-row'
 import { User } from '@/app/lib/definitions'
+import { BlockIcon } from '../ui/icons'
+import { Button } from '../ui/button'
 
 export default function UserList() {
     const [users, setUsers] = React.useState<User[] | null>(null)
@@ -43,13 +45,13 @@ export default function UserList() {
 
     return (
         <div className="space-y-3">
-            <div className="w-full hidden sm:flex items-center px-4 py-2 text-md font-medium">
+            {/* <div className="w-full hidden sm:flex items-center px-4 py-2 text-md font-medium">
                 <span className="sm:w-1/3">Email</span>
                 <span className="sm:w-1/4">Nom</span>
                 <span className="sm:w-1/6">Admin</span>
                 <span className="sm:w-1/6">Points</span>
                 <span className="sm:w-1/6">Créé le</span>
-            </div>
+            </div> */}
 
             {users && users.length === 0 && (
                 <span className="p-4 text-center text-muted-foreground">Aucun utilisateur</span>

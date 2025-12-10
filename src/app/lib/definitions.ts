@@ -7,6 +7,7 @@ export type User = {
   lastName: string;
   points?: number;
   is_admin?: boolean;
+  is_blocked?: boolean;
 };
 
 export type Habit = {

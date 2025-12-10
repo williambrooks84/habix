@@ -18,6 +18,13 @@ export const authOptions: AuthOptions = {
         const result = await sql`SELECT * FROM users WHERE email = ${credentials.email}`;
         if (result.length === 0) return null;
         const user = result[0];
+        
+        // Block user if is_blocked is true
+        if (user.is_blocked === true) {
+          console.log('Auth API - User is blocked:', user.email);
+          throw new Error('USER_BLOCKED');
+        }
+        
         const isValid = await verifyPassword(credentials.password, user.password_hash);
         if (!isValid) return null;
         return { ...toUserResponse(user), id: String(user.id) } as User;

@@ -66,3 +66,27 @@ export async function getAllUsers() {
     return []
   }
 }
+
+export async function blockUser(userId: number): Promise<boolean> {
+  try {
+    await sql`
+      UPDATE users SET is_blocked = true WHERE id = ${userId}
+    `
+    return true
+  } catch (error) {
+    console.error('Error blocking user:', error)
+    return false
+  }
+}
+
+export async function unblockUser(userId: number): Promise<boolean> {
+  try {
+    await sql`
+      UPDATE users SET is_blocked = false WHERE id = ${userId}
+    `
+    return true
+  } catch (error) {
+    console.error('Error unblocking user:', error)
+    return false
+  } 
+}

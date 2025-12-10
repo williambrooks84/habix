@@ -6,10 +6,26 @@ import { getToken } from 'next-auth/jwt'; // server-side JWT helper
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Skip auth checks for public routes
+  if (pathname.startsWith('/api/auth') || pathname === '/login' || pathname === '/signup') {
+    return NextResponse.next();
+  }
+
+  // Check authentication for all other pages
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  
+  // If user is blocked, clear session and redirect to login
+  if (token && (token as any).is_blocked === true) {
+    console.log('Middleware - Blocked user detected, redirecting to login');
+    const response = NextResponse.redirect(new URL('/login?blocked=true', req.nextUrl));
+    // Clear the session cookie
+    response.cookies.delete('next-auth.session-token');
+    response.cookies.delete('__Secure-next-auth.session-token');
+    return response;
+  }
+
   // Only protect dashboard pages; tweak as needed
   if (pathname.startsWith('/dashboard')) {
-    // getToken reads the session/jwt cookie server-side
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (!token) {
       // redirect to login with callback
       const signInUrl = new URL('/login', req.nextUrl);
@@ -31,5 +47,5 @@ export async function middleware(req: NextRequest) {
 
 // Optionally export a matcher to limit the middleware to these paths:
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
 };

@@ -29,6 +29,7 @@ export const { auth, signIn, signOut } = NextAuth({
         (token as any).first_name = (user as any).first_name ?? (user as any).name?.split(/\s+/)[0];
         (token as any).userId = (user as any).id;
         (token as any).is_admin = (user as any).is_admin ?? false;
+        (token as any).is_blocked = (user as any).is_blocked ?? false;
       }
       return token;
     },
@@ -57,6 +58,13 @@ Credentials({
       const { email, password } = parsedCredentials.data;
       const user = await getUser(email);
       if (!user) return null;
+      
+      // Block user if is_blocked is true
+      if (user.is_blocked === true) {
+        console.log('Auth - User is blocked:', user.email);
+        throw new Error('USER_BLOCKED');
+      }
+      
       const passwordsMatch = await bcrypt.compare(password, user.password);
       if (passwordsMatch) {
         // Return user with all needed fields explicitly
@@ -65,7 +73,8 @@ Credentials({
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
           first_name: user.firstName,
-          is_admin: user.is_admin ?? false
+          is_admin: user.is_admin ?? false,
+          is_blocked: user.is_blocked ?? false
         };
         console.log('Auth - authorize returning:', authUser);
         return authUser;

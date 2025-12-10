@@ -1,8 +1,8 @@
 "use client"
 
 import React from 'react'
-import { Button } from '../ui/button'
-import { BlockIcon } from '../ui/icons'
+import { Button } from '../button'
+import { BlockIcon } from '../icons'
 
 type AnyUser = Record<string, any>
 

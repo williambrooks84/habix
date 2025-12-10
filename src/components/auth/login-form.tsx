@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import FormInput from '../ui/auth/form-input';
 import { signIn } from 'next-auth/react';
+import BlockedUserModal from '../ui/auth/blocked-user-modal';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function LoginForm() {
   const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
   const [authError, setAuthError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
 
   const verifyEmailFormat = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -33,6 +35,7 @@ export default function LoginForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setAuthError(null);
+    setShowBlockedModal(false);
 
     // final client-side check
     const emailErr = verifyEmailFormat(form.email) ? null : "Email invalide";
@@ -49,7 +52,12 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setAuthError("Identifiants incorrects");
+        // Check if the error is due to blocked user
+        if (result.error.includes('USER_BLOCKED')) {
+          setShowBlockedModal(true);
+        } else {
+          setAuthError("Identifiants incorrects");
+        }
         setIsPending(false);
       } else if (result?.ok) {
         router.push(callbackUrl || '/');
@@ -62,6 +70,8 @@ export default function LoginForm() {
 
   return (
     <>
+      <BlockedUserModal isOpen={showBlockedModal} onClose={() => setShowBlockedModal(false)} />
+      
       <form onSubmit={handleSubmit} className="w-full flex mx-auto flex-col gap-4 mt-6" aria-live="polite">
         <div className="flex flex-col gap-4">
           <FormInput
