@@ -4,7 +4,7 @@ import { MenuOverlayProps } from "@/types/ui";
 import MenuItem from '@/components/ui/menu/menu-item';
 import ThemeToggle from '@/components/ui/theme-toggle/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { CrossIcon, LoginIcon, LogoutIcon, HomeIcon, HabitsIcon, CalendarIcon, RecommendationIcon, BadgeIcon } from '@/components/ui/icons';
+import { CrossIcon, LoginIcon, LogoutIcon, HomeIcon, HabitsIcon, CalendarIcon, RecommendationIcon, BadgeIcon, BackofficeIcon } from '@/components/ui/icons';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,24 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
 
     const [visible, setVisible] = useState(open);
     const [active, setActive] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    // Check admin status from API
+    useEffect(() => {
+        if (session?.user) {
+            fetch('/api/admin/check')
+                .then(res => res.json())
+                .then(data => {
+                    setIsAdmin(data.isAdmin ?? false);
+                })
+                .catch(err => {
+                    console.error('Menu - Admin check error:', err);
+                    setIsAdmin(false);
+                });
+        } else {
+            setIsAdmin(false);
+        }
+    }, [session]);
 
     const navItems = [
         {
@@ -41,6 +59,11 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             label: 'Recommandations',
             icon: RecommendationIcon,
             onClick: () => router.push('/recommendation'),
+        }, 
+        {
+            label: 'Backoffice',
+            icon: BackofficeIcon,
+            onClick: () => router.push('/admin'),
         }
     ]
 
@@ -114,7 +137,9 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                         </Button>
                     </MenuItem>
 
-                     {navItems.map((item, idx) => {
+                     {navItems
+                        .filter(item => item.label !== 'Backoffice' || isAdmin)
+                        .map((item, idx) => {
                         const Icon = item.icon;
                         return (
                             <MenuItem key={idx}>

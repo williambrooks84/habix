@@ -1,0 +1,68 @@
+'use server'
+
+import sql from '@/app/lib/database'
+
+export async function isUserAdmin(userId: number): Promise<boolean> {
+  try {
+    const result = await sql`
+      SELECT is_admin FROM users WHERE id = ${userId}
+    `
+    return result.length > 0 && result[0].is_admin === true
+  } catch (error) {
+    console.error('Error checking admin status:', error)
+    return false
+  }
+}
+
+export async function makeUserAdmin(userId: number): Promise<boolean> {
+  try {
+    await sql`
+      UPDATE users SET is_admin = true WHERE id = ${userId}
+    `
+    return true
+  } catch (error) {
+    console.error('Error making user admin:', error)
+    return false
+  }
+}
+
+export async function removeUserAdmin(userId: number): Promise<boolean> {
+  try {
+    await sql`
+      UPDATE users SET is_admin = false WHERE id = ${userId}
+    `
+    return true
+  } catch (error) {
+    console.error('Error removing admin status:', error)
+    return false
+  }
+}
+
+export async function getAllAdmins() {
+  try {
+    const result = await sql`
+      SELECT id, email, first_name, last_name, created_at 
+      FROM users 
+      WHERE is_admin = true
+      ORDER BY created_at DESC
+    `
+    return result
+  } catch (error) {
+    console.error('Error fetching admins:', error)
+    return []
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const result = await sql`
+      SELECT id, email, first_name, last_name, is_admin, points, created_at 
+      FROM users 
+      ORDER BY created_at DESC
+    `
+    return result
+  } catch (error) {
+    console.error('Error fetching users:', error)
+    return []
+  }
+}

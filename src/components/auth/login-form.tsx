@@ -1,6 +1,5 @@
 'use client';
 
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -40,18 +39,25 @@ export default function LoginForm() {
 
     if (emailErr) return;
 
-    // Use a full redirect so the authentication cookie is set by the
-    // server response (more reliable in deployed environments).
     setIsPending(true);
-    // Default `redirect` for next-auth `signIn` is `true` — we don't await
-    // because the browser will navigate on success and this code won't continue.
-    // Provide `callbackUrl` so the user returns to the correct page.
-    signIn('credentials', {
-      email: form.email,
-      password: form.password,
-      callbackUrl: callbackUrl || '/',
-    });
-    // Note: we don't set isPending false here because the page will navigate.
+    
+    try {
+      const result = await signIn('credentials', {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setAuthError("Identifiants incorrects");
+        setIsPending(false);
+      } else if (result?.ok) {
+        router.push(callbackUrl || '/');
+      }
+    } catch (error) {
+      setAuthError("Une erreur est survenue");
+      setIsPending(false);
+    }
   }
 
   return (
@@ -91,8 +97,7 @@ export default function LoginForm() {
 
         {authError && (
           <div className="flex items-center justify-center mt-2 text-center">
-            <ExclamationCircleIcon className="h-5 w-5" style={{ color: 'var(--error-color)' }} />
-            <p className="ml-2 text-sm" style={{ color: 'var(--error-color)' }}>{authError}</p>
+            <p className="ml-2 text-sm text-destructive">{authError}</p>
           </div>
         )}
       </form>

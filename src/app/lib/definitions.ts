@@ -5,6 +5,7 @@ export type User = {
   password: string;
   firstName: string;
   lastName: string;
+  is_admin?: boolean;
 };
 
 export type Habit = {

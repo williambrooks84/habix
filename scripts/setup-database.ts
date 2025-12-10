@@ -53,12 +53,13 @@ async function setupDatabase() {
         ADD COLUMN IF NOT EXISTS points integer NOT NULL DEFAULT 0
     `;
 
-    // Drop point_events table if it exists (no longer needed)
+    // Add is_admin column if it doesn't exist
     await sql`
-      DROP TABLE IF EXISTS point_events CASCADE
+      ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false
     `;
 
-    console.log('✅ Points column created (or already exists). Removed point_events table.');
+    console.log('✅ Admin column created (or already exists). Removed point_events table.');
 
     // Verify the table was created
     const result = await sql`
