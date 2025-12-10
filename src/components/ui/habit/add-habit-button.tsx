@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "../button";
 import { AddHabitIcon } from "../icons";
@@ -8,9 +7,11 @@ import { AddHabitIcon } from "../icons";
 export default function AddHabitButton() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   if (status === "loading") return null;
   if (!session) return null;
+  if (typeof pathname === 'string' && pathname.startsWith('/admin')) return null;
 
   return (
     <div aria-hidden={false} className="fixed bottom-6 right-6 z-50 bg-background rounded-4xl">

@@ -5,6 +5,7 @@ export type User = {
   password: string;
   firstName: string;
   lastName: string;
+  points?: number;
   is_admin?: boolean;
 };
 

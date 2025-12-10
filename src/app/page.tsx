@@ -16,7 +16,7 @@ export default function Home() {
   const [recommendationTitle, setRecommendationTitle] = React.useState<string | null>(null);
 
   const userName = (session?.user as any)?.first_name
-    ?? (session?.user?.name ? session.user.name.trim().split(/\s+/)[0] : undefined)
+    ?? (session?.user?.name ? session.user.name.split(/\s+/)[0] : undefined)
     ?? (session?.user?.email ? session.user.email.split('@')[0] : 'Anonymous');
 
   async function fetchRandomRecommendation() {
