@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button } from '../button'
-import { BlockIcon } from '../icons'
+import { BlockIcon, CheckIconValid } from '../icons'
 
 type AnyUser = Record<string, any>
 
@@ -41,7 +41,7 @@ export default function UserRow({ user }: { user: AnyUser }) {
   }
 
   return (
-    <section
+    <div
       className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2 sm:gap-4 border-3 border-primary rounded-2xl p-6"
     >
       <div className="sm:hidden text-center w-full">
@@ -70,19 +70,28 @@ export default function UserRow({ user }: { user: AnyUser }) {
         <span className="text-foreground text-base">{created ? new Date(created).toLocaleString() : '-'}</span>
       </div>
 
-      <div className="w-full sm:w-1/6 flex items-center justify-end gap-2">
+      <div className="w-full sm:w-1/6 flex items-center justify-center sm:justify-end pt-4 gap-2">
         <Button
-          variant={blocked ? 'primaryOutline' : 'primaryOutline'}
+          variant={blocked ? 'transparent' : 'transparent'}
           size="small"
           onClick={toggleBlock}
           disabled={busy}
           title={blocked ? 'Débloquer utilisateur' : 'Bloquer utilisateur'}
           aria-label={blocked ? 'Débloquer utilisateur' : 'Bloquer utilisateur'}
         >
-          <BlockIcon />
-          <span className="ml-2">{blocked ? 'Débloquer' : 'Bloquer'}</span>
+          {blocked ? (
+            <>
+              <CheckIconValid />
+              <span className="ml-2">Débloquer</span>
+            </>
+          ) : (
+            <>
+              <BlockIcon />
+              <span className="ml-2">Bloquer</span>
+            </>
+          )}
         </Button>
       </div>
-    </section>
+    </div>
   )
 }

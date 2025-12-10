@@ -232,3 +232,8 @@ export interface PointsContextType {
   pointsVersion: number;
   refreshPoints: () => void;
 }
+
+export interface BlockedUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
