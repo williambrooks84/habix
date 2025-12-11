@@ -34,7 +34,6 @@ export default function HabitRow({ habit }: { habit: AnyHabit }) {
         throw new Error(text || 'Failed to delete habit')
       }
 
-      // refresh list UI — reload page so admin list updates.
       window.location.reload()
     } catch (error) {
       console.error('Error deleting habit:', error)
@@ -86,10 +85,10 @@ export default function HabitRow({ habit }: { habit: AnyHabit }) {
           <span className="text-foreground text-base">{created ? new Date(created).toLocaleString() : '-'}</span>
         </div>
 
-        {/* Bottom action row (spans full width on mobile, right-aligned on larger screens) */}
         <div className="w-full mt-4 flex justify-center sm:justify-end">
           <Button
             variant="transparent"
+            size="small"
             onClick={() => setShowDeleteModal(true)}
             title="Supprimer l'habitude"
           >

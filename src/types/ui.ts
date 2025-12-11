@@ -241,3 +241,10 @@ export interface BlockedUserModalProps {
 }
 
 export type AnyHabit = Record<string, any>
+
+type AdminTab = "users" | "habits"
+
+export type AdminToggleProps = {
+    value: AdminTab
+  onChange: (v: AdminTab) => void
+}
