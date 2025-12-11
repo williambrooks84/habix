@@ -56,8 +56,8 @@ export async function getAllAdmins() {
 export async function getAllUsers() {
   try {
     const result = await sql`
-      SELECT id, email, first_name, last_name, is_admin, points, created_at 
-      FROM users 
+      SELECT id, email, first_name, last_name, is_admin, is_blocked, points, created_at
+      FROM users
       ORDER BY created_at DESC
     `
     return result
@@ -88,5 +88,34 @@ export async function unblockUser(userId: number): Promise<boolean> {
   } catch (error) {
     console.error('Error unblocking user:', error)
     return false
+  } 
+}
+
+export async function GetAllHabits() {
+  try {
+    const result = await sql`
+      SELECT h.*, 
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        c.name AS category
+      FROM habits h
+      LEFT JOIN users u ON h.user_id = u.id
+      LEFT JOIN categories c ON h.category_id = c.id
+    `;
+    return result;
+  } catch (error) {
+    console.error('Error fetching all habits:', error);
+    return false;
+  }
+}
+
+export async function DeleteHabit(habitId: number): Promise<boolean> {
+  try {
+    await sql`
+      DELETE FROM habits WHERE id = ${habitId}
+    `;
+    return true;
+  } catch (error) {
+    console.error('Error deleting habit:', error);
+    return false;
   } 
 }

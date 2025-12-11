@@ -233,7 +233,11 @@ export interface PointsContextType {
   refreshPoints: () => void;
 }
 
+//Backoffice 
+
 export interface BlockedUserModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+export type AnyHabit = Record<string, any>

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/components/ui/loading/loading'
 import UserList from '@/components/backoffice/user-list'
+import HabitList from '@/components/backoffice/habit-list'
 
 export default function AdminDashboard() {
     const { data: session, status } = useSession()
@@ -47,7 +48,14 @@ export default function AdminDashboard() {
     return (
         <main className="flex flex-col sm:max-w-7xl mx-auto p-6 mb-6 gap-6">
             <h1 className="text-3xl font-bold">Backoffice</h1>
-            <UserList />
+            <section className="flex flex-col gap-4">
+                <h2 className="text-2xl font-semibold">Utilisateurs</h2>
+                <UserList />
+            </section>
+            <section className="flex flex-col gap-4">
+                <h2 className="text-2xl font-semibold">Habitudes</h2>
+                <HabitList />
+            </section>
         </main>
     )
 }
