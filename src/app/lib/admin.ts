@@ -119,3 +119,15 @@ export async function DeleteHabit(habitId: number): Promise<boolean> {
     return false;
   } 
 }
+
+export async function getHabitsByUserId(userId: number) {
+  try {
+    const result = await sql`
+      SELECT * FROM habits WHERE user_id = ${userId}
+    `;
+    return result;
+  } catch (error) {
+    console.error('Error fetching habits by user ID:', error);
+    return [];
+  }
+}

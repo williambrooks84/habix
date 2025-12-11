@@ -248,3 +248,10 @@ export type AdminToggleProps = {
     value: AdminTab
   onChange: (v: AdminTab) => void
 }
+
+export type AnyUser = Record<string, any>
+
+export interface UserFilterProps {
+  selectedUserId: string | null
+  onUserChange: (userId: string | null) => void
+}
