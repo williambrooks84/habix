@@ -3,15 +3,12 @@ import * as dotenv from 'dotenv';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-// Load environment variables from .env (not .env.local)
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 dotenv.config({ path: resolve(__dirname, '../.env') });
 
 async function setupDatabase() {
-  // Check if DATABASE_URL exists
   if (!process.env.DATABASE_URL) {
     console.error('❌ DATABASE_URL is not set in .env file');
-    console.log('Please check your .env file contains DATABASE_URL');
     process.exit(1);
   }
 
@@ -19,12 +16,11 @@ async function setupDatabase() {
   const sql = neon(process.env.DATABASE_URL);
 
   try {
-    console.log('🚀 Creating database tables...');
+    console.log('🚀 Creating database schema...');
 
-    // Drop column if exists
-    //await sql`ALTER TABLE users DROP COLUMN IF EXISTS is_verified`;
-
-    // Create table if not exists
+    // --------------------------
+    // USERS TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -32,47 +28,19 @@ async function setupDatabase() {
         last_name VARCHAR(100) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
+        profile_picture TEXT,
+        points INTEGER NOT NULL DEFAULT 0,
+        is_admin BOOLEAN NOT NULL DEFAULT false,
+        is_blocked BOOLEAN NOT NULL DEFAULT false,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `;
+    console.log('✅ users table created');
 
-    console.log('✅ Users table created successfully!');
-
-    // Add profile_picture column if it doesn't exist
-    await sql`
-      ALTER TABLE users
-        ADD COLUMN IF NOT EXISTS profile_picture TEXT
-    `;
-
-    console.log('✅ Profile picture column added (or already exists)');
-
-    // Minimal points support: points column (default 0)
-    await sql`
-      ALTER TABLE users
-        ADD COLUMN IF NOT EXISTS points integer NOT NULL DEFAULT 0
-    `;
-
-    // Add is_admin column if it doesn't exist
-    await sql`
-      ALTER TABLE users
-        ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false
-    `;
-
-    console.log('✅ Admin column created (or already exists). Removed point_events table.');
-
-    // Verify the table was created
-    const result = await sql`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_name = 'users'
-    `;
-
-    if (result.length > 0) {
-      console.log('✅ Users table verified and ready to use!');
-    }
-
-    // Create categories table
+    // --------------------------
+    // CATEGORIES TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS categories (
         id SERIAL PRIMARY KEY,
@@ -81,17 +49,17 @@ async function setupDatabase() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `;
+    console.log('✅ categories table created');
 
-    // Default categories
     await sql`
       INSERT INTO categories (name) VALUES
         ('Santé'), ('Productivité'), ('Loisirs'), ('Apprentissage')
       ON CONFLICT (name) DO NOTHING
     `;
 
-    console.log('✅ Categories table created (or already exists)');
-
-    // Create habits table
+    // --------------------------
+    // HABITS TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS habits (
         id SERIAL PRIMARY KEY,
@@ -104,61 +72,16 @@ async function setupDatabase() {
         frequency_type VARCHAR(50),
         frequency_config JSONB,
         next_run TIMESTAMPTZ,
+        color VARCHAR(32),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `;
+    console.log('✅ habits table created');
 
-    console.log('✅ Habits table created (or already exists)');
-
-    // Ensure new columns exist (add them when table already existed)
-    await sql`
-      ALTER TABLE habits
-        ADD COLUMN IF NOT EXISTS frequency_type VARCHAR(50),
-        ADD COLUMN IF NOT EXISTS frequency_config JSONB,
-        ADD COLUMN IF NOT EXISTS next_run TIMESTAMPTZ,
-        ADD COLUMN IF NOT EXISTS color VARCHAR(32)
-    `;
-
-    // Detect which source column exists ("frequence" or "frequency") and backfill accordingly
-
-    const hasFrequency = (await sql`
-      SELECT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'habits' AND column_name = 'frequency'
-      ) AS exists
-    `)[0]?.exists;
-
-    if (hasFrequency) {
-      await sql`
-        UPDATE habits
-        SET frequency_type = CASE
-          WHEN lower(coalesce(frequency,'')) LIKE '%tous les jours%' THEN 'daily'
-          WHEN lower(coalesce(frequency,'')) LIKE '%1 fois par semaine%' OR lower(coalesce(frequency,'')) LIKE '%une fois par semaine%' THEN 'weekly'
-          WHEN lower(coalesce(frequency,'')) LIKE '%plusieurs fois par semaine%' THEN 'weekly-multi'
-          WHEN lower(coalesce(frequency,'')) LIKE '%1 fois par mois%' OR lower(coalesce(frequency,'')) LIKE '%une fois par mois%' THEN 'monthly'
-          WHEN lower(coalesce(frequency,'')) LIKE '%plusieurs fois par mois%' THEN 'monthly-multi'
-          ELSE 'custom'
-        END
-        WHERE frequency_type IS NULL AND frequency IS NOT NULL
-      `;
-      console.log('✅ Habits table backfilled from "frequency" column');
-    } else {
-      console.log('ℹ️ No source frequency column ("frequence" or "frequency") found — skipping backfill');
-    }
-
-    console.log('✅ Habits table backfilled successfully!');
-
-  } catch (error) {
-    console.error('❌ Error creating tables:', error);
-    process.exit(1);
-  }
-
-  //drop frequency column
-  await sql`ALTER TABLE habits DROP COLUMN IF EXISTS frequency`;
-
-  // Create habit_runs table to track per-day completions
-  try {
+    // --------------------------
+    // HABIT RUNS TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS habit_runs (
         id SERIAL PRIMARY KEY,
@@ -166,30 +89,16 @@ async function setupDatabase() {
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         run_date DATE NOT NULL,
         completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        notes TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         UNIQUE(habit_id, run_date)
       )
     `;
-
-    // Helpful index for queries by date
     await sql`CREATE INDEX IF NOT EXISTS idx_habit_runs_run_date ON habit_runs (run_date)`;
+    console.log('✅ habit_runs table created');
 
-    // Ensure created_at exists for compatibility with RETURNING clauses
-    await sql`
-      ALTER TABLE habit_runs
-        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-    `;
-
-    console.log('✅ habit_runs table created (or already exists)');
-  } catch (err) {
-    console.error('❌ Error creating habit_runs table:', err);
-    process.exit(1);
-  }
-
-  console.log('✅ Legacy frequency columns dropped if they existed');
-
-  //Create recommendations table
-  try {
+    // --------------------------
+    // RECOMMENDATIONS TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS recommendations (
         id SERIAL PRIMARY KEY,
@@ -199,95 +108,77 @@ async function setupDatabase() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `;
-  } catch (err) {
-    console.error('❌ Error creating recommendations table:', err);
-    process.exit(1);
-  }
+    console.log('✅ recommendations table created');
 
-  console.log('✅ recommendations table created (or already exists)');
-
-  // Insert default recommendations if table is empty 
-  try {
     await sql`
       INSERT INTO recommendations (title, content) VALUES
-        ('Boire 2L d''eau par jour', 'L''hydratation est essentielle pour le bon fonctionnement de votre corps. Essayez de boire régulièrement tout au long de la journée.'),
-        ('Méditer 10 minutes chaque matin', 'La méditation matinale aide à réduire le stress et améliore la concentration pour toute la journée.'),
-        ('Faire 30 minutes d''exercice', 'L''activité physique régulière renforce votre santé cardiovasculaire et améliore votre humeur.'),
-        ('Lire 20 pages par jour', 'La lecture quotidienne stimule votre cerveau, améliore votre vocabulaire et réduit le stress.'),
-        ('Écrire dans un journal', 'Tenir un journal aide à clarifier vos pensées, gérer vos émotions et suivre votre évolution personnelle.'),
-        ('Dormir 8 heures par nuit', 'Un sommeil suffisant est crucial pour la récupération physique et mentale, ainsi que pour la concentration.'),
-        ('Apprendre 10 nouveaux mots dans une langue étrangère', 'L''apprentissage régulier d''une langue stimule votre cerveau et ouvre de nouvelles opportunités.'),
-        ('Pratiquer la gratitude', 'Notez 3 choses pour lesquelles vous êtes reconnaissant chaque jour pour améliorer votre bien-être mental.'),
-        ('Faire son lit chaque matin', 'Commencer la journée par une petite victoire crée un élan positif pour le reste de la journée.'),
-        ('Prendre les escaliers au lieu de l''ascenseur', 'Cette petite habitude augmente votre activité physique quotidienne sans effort supplémentaire.'),
-        ('Manger 5 fruits et légumes par jour', 'Une alimentation riche en fruits et légumes fournit les vitamines et minéraux essentiels à votre santé.'),
-        ('Se déconnecter des écrans 1h avant le coucher', 'Réduire l''exposition à la lumière bleue améliore la qualité de votre sommeil.'),
-        ('Faire des étirements le matin', '10 minutes d''étirements au réveil améliorent votre flexibilité et réduisent les tensions musculaires.'),
-        ('Appeler un proche chaque semaine', 'Maintenir des liens sociaux réguliers est essentiel pour votre bien-être émotionnel.'),
-        ('Planifier sa journée la veille', 'Préparer votre journée à l''avance réduit le stress et améliore votre productivité.'),
-        ('Pratiquer une activité créative', 'Dessiner, peindre ou jouer d''un instrument stimule votre créativité et réduit le stress.'),
-        ('Faire une promenade de 15 minutes', 'Une courte marche quotidienne améliore votre humeur et votre santé cardiovasculaire.'),
-        ('Limiter le café à 2 tasses par jour', 'Réduire la consommation de caféine améliore la qualité du sommeil et réduit l''anxiété.'),
-        ('Écouter un podcast éducatif', 'Apprendre de nouvelles choses pendant vos trajets ou pauses enrichit vos connaissances.'),
-        ('Ranger son espace de travail chaque soir', 'Un environnement organisé favorise la concentration et réduit le stress au quotidien.')
+        ('Boire 2L d''eau par jour', 'L''hydratation est essentielle...'),
+        ('Méditer 10 minutes chaque matin', 'La méditation aide à réduire le stress...'),
+        ('Faire 30 minutes d''exercice', 'L''activité physique régulière...'),
+        ('Lire 20 pages par jour', 'La lecture stimule votre cerveau...'),
+        ('Écrire dans un journal', 'Tenir un journal aide à clarifier vos pensées...'),
+        ('Dormir 8 heures par nuit', 'Un sommeil suffisant est essentiel...'),
+        ('Apprendre des nouveaux mots', 'L''apprentissage régulier stimule votre cerveau...'),
+        ('Pratiquer la gratitude', 'Notez 3 choses chaque jour...'),
+        ('Faire son lit', 'Commencer la journée par une petite victoire...'),
+        ('Prendre les escaliers', 'Une habitude simple pour augmenter l’activité physique...'),
+        ('Manger 5 fruits et légumes', 'Une alimentation riche en vitamines...'),
+        ('Se déconnecter avant de dormir', 'Réduire les écrans avant le coucher...'),
+        ('Faire des étirements', 'Améliore la flexibilité...'),
+        ('Appeler un proche', 'Maintenir les liens sociaux...'),
+        ('Planifier sa journée', 'Aide à réduire le stress...'),
+        ('Pratiquer une activité créative', 'Stimule votre créativité...'),
+        ('Faire une promenade', 'Améliore l’humeur et la santé...'),
+        ('Limiter le café', 'Réduit l’anxiété...'),
+        ('Écouter un podcast éducatif', 'Enrichit vos connaissances...'),
+        ('Ranger son espace de travail', 'Un espace ordonné améliore la concentration...')
       ON CONFLICT DO NOTHING
     `;
-    console.log('✅ Default recommendations inserted successfully!');
-  } catch (err) {
-    console.error('❌ Error inserting recommendations:', err);
-    process.exit(1);
-  }
+    console.log('✅ default recommendations inserted');
 
-  // Create badges table
-  await sql`
-    CREATE TABLE IF NOT EXISTS badges (
-      id VARCHAR(32) PRIMARY KEY,
-      name VARCHAR(64) NOT NULL,
-      description TEXT NOT NULL,
-      points_required INTEGER NOT NULL
-    )
-  `;
+    // --------------------------
+    // BADGES TABLE
+    // --------------------------
+    await sql`
+      CREATE TABLE IF NOT EXISTS badges (
+        id VARCHAR(32) PRIMARY KEY,
+        name VARCHAR(64) NOT NULL,
+        description TEXT NOT NULL,
+        points_required INTEGER NOT NULL
+      )
+    `;
+    console.log('✅ badges table created');
 
-  console.log('✅ Badges table created (or already exists)');
+    await sql`
+      INSERT INTO badges (id, name, description, points_required) VALUES
+        ('bronze', 'Bronze', '5 points', 5),
+        ('silver', 'Argent', '10 points', 10),
+        ('gold', 'Or', '25 points', 25),
+        ('platinum', 'Platine', '50 points', 50),
+        ('diamond', 'Diamant', '100 points', 100),
+        ('master', 'Maître', '250 points', 250),
+        ('legend', 'Légende', '500 points', 500),
+        ('mythic', 'Mythique', '1000 points', 1000)
+      ON CONFLICT (id) DO NOTHING
+    `;
+    console.log('✅ default badges inserted');
 
-  // Insert default badges
-  await sql`
-    INSERT INTO badges (id, name, description, points_required) VALUES
-      ('bronze',   'Bronze',   '5 points',      5),
-      ('silver',   'Argent',   '10 points',     10),
-      ('gold',     'Or',       '25 points',     25),
-      ('platinum', 'Platine',  '50 points',     50),
-      ('diamond',  'Diamant',  '100 points',    100),
-      ('master',   'Maître',   '250 points',    250),
-      ('legend',   'Légende',  '500 points',    500),
-      ('mythic',   'Mythique', '1000 points',   1000)
-    ON CONFLICT (id) DO NOTHING
-  `;
+    // --------------------------
+    // USER BADGES TABLE
+    // --------------------------
+    await sql`
+      CREATE TABLE IF NOT EXISTS user_badges (
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        badge_id VARCHAR(32) REFERENCES badges(id) ON DELETE CASCADE,
+        awarded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (user_id, badge_id)
+      )
+    `;
+    console.log('✅ user_badges table created');
 
-  console.log('✅ Default badges inserted');
-
-  // Create user_badges join table
-  await sql`
-    CREATE TABLE IF NOT EXISTS user_badges (
-      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-      badge_id VARCHAR(32) REFERENCES badges(id) ON DELETE CASCADE,
-      awarded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      PRIMARY KEY (user_id, badge_id)
-    )
-  `;
-
-  console.log('✅ user_badges table created (or already exists)');
-
-  // Add is_blocked column if it doesn't exist
-  await sql`
-    ALTER TABLE users
-      ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN NOT NULL DEFAULT false
-  `;
-
-  console.log('✅ is_blocked column added (or already exists)');
-
-  // Create notifications table
-  try {
+    // --------------------------
+    // NOTIFICATIONS TABLE
+    // --------------------------
     await sql`
       CREATE TABLE IF NOT EXISTS notifications (
         id SERIAL PRIMARY KEY,
@@ -299,9 +190,12 @@ async function setupDatabase() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
     `;
-    console.log('✅ notifications table created (or already exists)');
-  } catch (err) {
-    console.error('❌ Error creating notifications table:', err);
+    console.log('✅ notifications table created');
+
+    console.log('🎉 All database tables installed successfully!');
+
+  } catch (error) {
+    console.error('❌ Error during setup:', error);
     process.exit(1);
   }
 }

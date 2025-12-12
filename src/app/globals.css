@@ -2,7 +2,6 @@
 @import "tailwindcss";
 @import "react-day-picker/dist/style.css";
 
-/* 🔥 Tailwind v4 reads tokens from here */
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -16,17 +15,14 @@
   --color-text: var(--text-color);
   --color-gray: var(--color-gray);
 
-  /* shadcn naming */
   --color-destructive: var(--error);
   --color-destructive-foreground: #ffffff;
 }
 
-/* ===== CSS Variables ===== */
 :root {
   --error: #ef4444;
   --primary: #04D6AB;
 
-  /* Gray color available in both light and dark */
   --color-gray: #A9A9A9;
 
   --background-light: #ffffff;
@@ -35,7 +31,6 @@
   --background-dark: #031522;
   --foreground-dark: #f8fafc;
 
-  /* Defaults (light mode) */
   --background: var(--background-light);
   --foreground: var(--foreground-light);
 
@@ -46,7 +41,6 @@
   --shadcn-ring: var(--primary);
 }
 
-/* ===== Dark Mode (user-selected) ===== */
 :root[data-theme="dark"],
 .dark {
   --error: #f87171;
@@ -59,11 +53,9 @@
   --shadcn-border: rgba(255, 255, 255, 0.12);
   --shadcn-input: rgba(255, 255, 255, 0.02);
 
-  /* Ensure color-gray is available in dark theme as well */
   --color-gray: #A9A9A9;
 }
 
-/* ===== System Preference (only when NO data-theme is set) ===== */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --error: #f87171;
@@ -76,12 +68,10 @@
     --shadcn-border: rgba(255, 255, 255, 0.12);
     --shadcn-input: rgba(255, 255, 255, 0.02);
 
-    /* Ensure color-gray is available for system dark preference */
     --color-gray: #A9A9A9;
   }
 }
 
-/* ===== Base Styles ===== */
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
@@ -89,7 +79,6 @@ body {
 }
 
 /* Date picker overrides */
-
 .rdp-day_today,
 .rdp-day_today .rdp-day_button,
 .rdp-day_today .rdp-button,

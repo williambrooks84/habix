@@ -12,7 +12,6 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  // form state and validation
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
   const [authError, setAuthError] = useState<string | null>(null);
@@ -37,7 +36,6 @@ export default function LoginForm() {
     setAuthError(null);
     setShowBlockedModal(false);
 
-    // final client-side check
     const emailErr = verifyEmailFormat(form.email) ? null : "Email invalide";
 
     if (emailErr) return;
@@ -52,7 +50,6 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        // Check if the error is due to blocked user
         if (result.error.includes('USER_BLOCKED')) {
           setShowBlockedModal(true);
         } else {

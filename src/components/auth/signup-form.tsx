@@ -3,8 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
-import { useActionState, useState } from 'react';
-import { authenticate } from '@/app/lib/actions';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import FormInput from '../ui/auth/form-input';
 
@@ -12,7 +11,7 @@ export default function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  const [errorMessage, , isPending] = useActionState(authenticate, undefined);
+  const [isPending, setIsPending] = useState(false);
   const [clientError, setClientError] = useState<string | null>(null);
   const [form, setForm] = useState({ email: '', password: '', confirmpassword: '', firstName: '', lastName: '' });
   const [errors, setErrors] = useState<{ [k: string]: string | null }>({});
@@ -20,36 +19,43 @@ export default function SignupForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setClientError(null);
+    setIsPending(true);
 
     const fd = new FormData(e.currentTarget);
 
     const validationError = validateFormData(fd);
     if (validationError) {
       setClientError(validationError);
+      setIsPending(false);
       return;
     }
 
     const payload = Object.fromEntries(fd.entries());
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    if (res.status === 409) {
-      // Email already exists in database
-      setClientError('Email already in use. If this is your email, try logging in or reset your password.');
-      return;
+      if (res.status === 409) {
+        setClientError('Email already in use. If this is your email, try logging in or reset your password.');
+        setIsPending(false);
+        return;
+      }
+
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}));
+        setClientError(result.error || 'Signup failed. Please try again.');
+        setIsPending(false);
+        return;
+      }
+
+      router.push('/login');
+    } catch (error) {
+      setClientError('An error occurred. Please try again.');
+      setIsPending(false);
     }
-
-    if (!res.ok) {
-      const result = await res.json().catch(() => ({}));
-      setClientError(result.error || 'Signup failed. Please try again.');
-      return;
-    }
-
-    // Success
-    router.push('/login');
   }
 
   function verifyEmailFormat(email: string) {
@@ -202,10 +208,10 @@ export default function SignupForm() {
           S'inscrire
         </Button>
 
-        {(clientError || errorMessage) && (
+        {clientError && (
           <div className="flex items-center justify-center mt-2 text-center">
             <ExclamationCircleIcon className="h-5 w-5 text-destructive" />
-            <p className="ml-2 text-sm text-destructive">{clientError ?? errorMessage}</p>
+            <p className="ml-2 text-sm text-destructive">{clientError}</p>
           </div>
         )}
       </form>

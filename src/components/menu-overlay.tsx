@@ -131,7 +131,7 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
                 <ul className="flex flex-col gap-1">
                     <MenuItem>
                         <ThemeToggle />
-                        <Button variant="transparent" size="paddingless" onClick={onClose}>
+                        <Button variant="transparent" size="paddingless" onClick={onClose} aria-label="Fermer le menu">
                             <CrossIcon />
                         </Button>
                     </MenuItem>

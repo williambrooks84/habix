@@ -36,7 +36,9 @@ export default function UserBadges({ className }: { className?: string }) {
             key={b.id}
             className="flex flex-col items-center p-4"
           >
-            {b.id && BadgeIcons[(b.id.charAt(0).toUpperCase() + b.id.slice(1)) as keyof typeof BadgeIcons]?.()}
+            <div aria-label={`Badge: ${b.name}`} role="img">
+              {b.id && BadgeIcons[(b.id.charAt(0).toUpperCase() + b.id.slice(1)) as keyof typeof BadgeIcons]?.()}
+            </div>
             <div className="mt-2 text-base font-bold">{b.name}</div>
             <div className="text-sm text-primary">
               {b.description}

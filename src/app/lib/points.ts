@@ -1,10 +1,10 @@
 import sql from './database'
 import { awardBadgesForUser } from './badges'
+import { formatYMD } from './date-utils'
 
 export async function createHabitRunAndAwardPoints(userId: number, habitId: number, runDate?: string) {
-  const date = runDate ?? new Date().toISOString().slice(0, 10);
+  const date = runDate ?? formatYMD(new Date());
   try {
-    // daily bonus removed — no longer tracking dayBonusAwarded
     await sql`BEGIN`;
 
     try {
@@ -46,7 +46,7 @@ export async function getUserPoints(userId: number) {
 }
 
 export async function awardPointsForCompletion(userId: number, habitId: number, runDate?: string) {
-  const date = runDate ?? new Date().toISOString().slice(0, 10);
+  const date = runDate ?? formatYMD(new Date());
   try {
     await sql`UPDATE users SET points = points + 1 WHERE id = ${userId}`;
 
@@ -64,7 +64,7 @@ export async function awardPointsForCompletion(userId: number, habitId: number, 
 }
 
 export async function removePointsForCompletion(userId: number, habitId: number, runDate?: string) {
-  const date = runDate ?? new Date().toISOString().slice(0, 10);
+  const date = runDate ?? formatYMD(new Date());
   try {
     await sql`UPDATE users SET points = points - 1 WHERE id = ${userId}`;
 

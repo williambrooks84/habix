@@ -12,8 +12,8 @@ import { pickIconByName } from '../lib/pick-icon-by-name';
 export default function HabitPage() {
     const { data: session, status } = useSession();
 
-    const [loadingHabits, setLoadingHabits] = React.useState(false);
-    const [habits, setHabits] = React.useState<any[] | null>(null);
+    const [loadingHabits, setLoadingHabits] = React.useState(true);
+    const [habits, setHabits] = React.useState<any[]>([]);
 
     React.useEffect(() => {
         if (!session) return;
@@ -43,12 +43,11 @@ export default function HabitPage() {
 
     if (loadingHabits) return <Loading />;
 
-    const hasHabits = Array.isArray(habits) && habits.length > 0;
     return (
         <main className="w-full mx-auto px-6 py-8 grid gap-8">
             <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9 mb-15">            
                 <h1 className="text-2xl font-semibold text-foreground">Vos habitudes</h1>
-                {hasHabits ? (
+                {habits.length > 0 ? (
                     <>
                         <HabitList
                             items={habits.map((h: any) => ({

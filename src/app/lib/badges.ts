@@ -20,11 +20,10 @@ export async function getUserBadges(userId: number) {
 }
 
 export async function awardBadgesForUser(userId: number) {
-  // Fetch current user points
+
   const u = await sql`SELECT points FROM users WHERE id = ${userId} LIMIT 1`;
   const points = u[0]?.points ?? 0;
 
-  // Fetch badges that the user qualifies for
   const eligible = await sql`
     SELECT id, name, description, points_required
     FROM badges
@@ -34,16 +33,10 @@ export async function awardBadgesForUser(userId: number) {
 
   const awarded: Array<{ id: string; name: string }> = [];
 
-  // Try to import notification helper once (non-fatal if it fails)
   let createNotification: ((userId: number, title: string, body?: string | null, data?: any) => Promise<any | boolean>) | null = null;
   try {
-    // dynamic import to avoid circular dependency issues
-    // path is relative to this file (same folder)
-    // Type of returned function may be boolean (current helper) or row if you switch it later
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     ({ createNotification } = await import('./notifications') as any);
   } catch (e) {
-    // Notifications helper not available — continue without notifications
     createNotification = null;
   }
 
@@ -60,7 +53,6 @@ export async function awardBadgesForUser(userId: number) {
       `;
       awarded.push({ id: b.id, name: b.name });
 
-      // Create a notification for the user (best-effort)
       try {
         if (createNotification) {
           const title = `Nouveau badge : ${b.name}`;

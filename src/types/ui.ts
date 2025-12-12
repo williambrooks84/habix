@@ -1,5 +1,7 @@
 import type { FrequencyType, FrequencyConfig } from '@/app/types';
 
+export type Theme = "light" | "dark";
+
 export type LogosProps = {
   variant?: 1 | 2;
   mode?: "auto" | "light" | "dark";

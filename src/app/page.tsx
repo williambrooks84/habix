@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import Loading from '@/components/ui/loading/loading';
@@ -20,8 +20,8 @@ const ChartLineInteractive = dynamic(
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [loadingHabits, setLoadingHabits] = React.useState(false);
-  const [habits, setHabits] = React.useState<any[] | null>(null);
+  const [loadingHabits, setLoadingHabits] = React.useState(true);
+  const [habits, setHabits] = React.useState<any[]>([]);
   const [recommendationTitle, setRecommendationTitle] = React.useState<string | null>(null);
 
   const userName = (session?.user as any)?.first_name
@@ -72,12 +72,10 @@ export default function Home() {
 
   if (status === 'loading') return <Loading />;
 
-  if (loadingHabits) return <Loading />;
-
   if (!session) return <HomeDisconnected />;
 
-  const hasHabits = Array.isArray(habits) && habits.length > 0;
-  
+  if (loadingHabits) return <Loading />;
+
   return (
     <div>
       <Toast title="Recommendation :" message={recommendationTitle ?? "Chargement..."} />
@@ -88,14 +86,14 @@ export default function Home() {
         <h2 className="text-lg text-foreground">Pensez à compléter vos habitudes du jour !</h2>
 
         <section aria-labelledby="habits-section" className="flex flex-col justify-center gap-9 mb-10">
-          {hasHabits ? (
+          {!loadingHabits && habits.length === 0 ? (
             <>
-              <TodayHabits />
-              <ChartLineInteractive />
+              <NoHabit />
             </>
           ) : (
             <>
-              <NoHabit />
+              <TodayHabits />
+              <ChartLineInteractive />
             </>
           )}
         </section>

@@ -3,9 +3,6 @@
 import sql from '@/app/lib/database'
 import { Notification } from './definitions'
 
-/**
- * Insert a notification for a user.
- */
 export async function createNotification(
   userId: number,
   title: string,
@@ -18,10 +15,7 @@ export async function createNotification(
       RETURNING *`
     const params = [userId, title, body ?? null, data ? JSON.stringify(data) : null]
 
-    // Cast `sql` to `any` so TypeScript won't treat the query result as `never`.
     const res: any = await (sql as any).query(sqlText, params)
-
-    // The driver can return an array of rows or an object with `rows`.
     const rows = Array.isArray(res) ? res : res?.rows ?? []
     const row = rows?.[0] ?? null
 
@@ -33,9 +27,6 @@ export async function createNotification(
   }
 }
 
-/**
- * Fetch notifications for a user. Defaults to most recent 50.
- */
 export async function getNotificationsForUser(
   userId: number,
   opts: { unreadOnly?: boolean; limit?: number; offset?: number } = {}
@@ -43,7 +34,6 @@ export async function getNotificationsForUser(
   const { unreadOnly = false, limit = 50, offset = 0 } = opts
   try {
     if (unreadOnly) {
-      // FIX: unread = false (not true)
       const rows = await sql`
         SELECT * FROM notifications
         WHERE user_id = ${userId} AND read = false
@@ -66,9 +56,6 @@ export async function getNotificationsForUser(
   }
 }
 
-/**
- * Mark a single notification as read.
- */
 export async function markAsRead(notificationId: number): Promise<boolean> {
   try {
     await sql`
@@ -81,9 +68,6 @@ export async function markAsRead(notificationId: number): Promise<boolean> {
   }
 }
 
-/**
- * Mark all notifications as read for a user.
- */
 export async function markAllRead(userId: number): Promise<boolean> {
   try {
     await sql`
@@ -96,9 +80,6 @@ export async function markAllRead(userId: number): Promise<boolean> {
   }
 }
 
-/**
- * Delete a notification.
- */
 export async function deleteNotification(notificationId: number): Promise<boolean> {
   try {
     await sql`
@@ -111,9 +92,6 @@ export async function deleteNotification(notificationId: number): Promise<boolea
   }
 }
 
-/**
- * Count unread notifications for a user.
- */
 export async function countUnread(userId: number): Promise<number> {
   try {
     const res = await sql`

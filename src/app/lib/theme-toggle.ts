@@ -1,4 +1,4 @@
-export type Theme = "light" | "dark";
+import { Theme } from '@/types/ui';
 
 export function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";

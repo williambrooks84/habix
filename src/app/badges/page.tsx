@@ -6,7 +6,7 @@ export default function BadgesPage() {
   
 
   return (
-    <section className="flex flex-col px-6 py-8 gap-6">
+    <section className="flex flex-col px-6 py-8 gap-6 pb-16">
       <UserBadges />
       <BadgesIllustration />
     </section>

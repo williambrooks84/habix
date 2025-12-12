@@ -28,7 +28,6 @@ export default function FormInput({
 
   const active = focused;
   const hasError = Boolean(error);
-  // only show destructive styles when there is an error AND the input contains text
   const showError = hasError && currentValue.length > 0;
 
   return (
@@ -61,6 +60,7 @@ export default function FormInput({
         placeholder={placeholder}
         required={required}
         minLength={minLength}
+        autoCapitalize={type === 'email' ? 'off' : undefined}
         value={currentValue}
         onChange={(e) => {
           const v = e.target.value;

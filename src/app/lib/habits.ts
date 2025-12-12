@@ -90,7 +90,6 @@ export async function deleteHabit(id: number): Promise<boolean> {
 
 function toYMD(d: string | Date) {
   if (!d && d !== '') return null;
-  // Accept YYYY-MM-DD strings directly (avoid Date parsing quirks)
   if (typeof d === 'string') {
     const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (isoDateRegex.test(d)) return d;
@@ -113,11 +112,11 @@ export async function markHabitComplete(habitId: number, userId: number | null, 
   const ymd = toYMD(runDate);
   if (!ymd) throw new Error('Invalid runDate');
   const rows = await sql`
-    INSERT INTO habit_runs (habit_id, user_id, run_date, notes)
-    VALUES (${habitId}, ${userId ?? null}, ${ymd}, ${notes ?? null})
+    INSERT INTO habit_runs (habit_id, user_id, run_date)
+    VALUES (${habitId}, ${userId ?? null}, ${ymd})
     ON CONFLICT (habit_id, run_date)
-    DO UPDATE SET notes = EXCLUDED.notes, completed_at = now()
-    RETURNING id, habit_id, user_id, run_date, completed_at, notes, created_at
+    DO UPDATE SET completed_at = now()
+    RETURNING id, habit_id, user_id, run_date, completed_at, created_at
   `;
   return rows[0];
 }
@@ -157,7 +156,11 @@ export async function getCompletedDaysForHabit(habitId: number): Promise<{ days:
     return `${y}-${m}-${dd}`;
   };
   const toYMDLocal = (v: any): string => {
-    if (typeof v === 'string') return v.slice(0, 10);
+    if (typeof v === 'string') {
+      const match = v.match(/^\d{4}-\d{2}-\d{2}/);
+      if (match) return match[0];
+      return v;
+    }
     const d = new Date(v);
     d.setHours(0, 0, 0, 0);
     return fmtLocal(d);

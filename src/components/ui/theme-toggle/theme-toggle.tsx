@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { DarkIcon, LightIcon } from "@/components/ui/icons";
-import { getInitialTheme, toggleTheme, applyTheme, Theme } from "@/app/lib/theme-toggle";
+import { getInitialTheme, toggleTheme, applyTheme } from "@/app/lib/theme-toggle";
+
+export type Theme = "light" | "dark";
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme | null>(null);

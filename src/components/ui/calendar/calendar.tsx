@@ -215,6 +215,7 @@ export function CalendarHijri({ initialData }: CalendarHijriProps) {
                       onClick={() => toggleCompletion(it)}
                       disabled={toggling || !isSelectedToday}
                       aria-pressed={it.done}
+                      aria-label={`${it.done ? 'Annuler' : 'Marquer comme fait'}: ${it.name}`}
                       title={!isSelectedToday ? "Modifier uniquement aujourd\'hui" : it.done ? 'Annuler' : 'Valider'}
                       className={cn(
                         'inline-flex items-center justify-center rounded-md p-1',

@@ -63,7 +63,7 @@ export default function ToastContainer() {
     <div className="fixed bottom-4 inset-x-3 z-[70] flex flex-col gap-2">
       {toasts.map((t) => {
         const BadgeIcon = t.type === 'badge' && t.title 
-          ? BadgeIcons[(t.title.charAt(0).toUpperCase() + t.title.slice(1)) as keyof typeof BadgeIcons]
+          ? BadgeIcons[t.title as keyof typeof BadgeIcons]
           : null
 
         return (
@@ -72,7 +72,7 @@ export default function ToastContainer() {
             className="w-auto max-w-full sm:max-w-md md:max-w-lg border-2 border-primary bg-background rounded-lg px-4 py-3 flex justify-between items-center gap-3 shadow-md"
           >
             {t.type === 'badge' && BadgeIcon && (
-              <div className="flex-shrink-0 w-10 h-10">
+              <div className="flex-shrink-0 w-10 h-10" aria-label={`Nouveau badge obtenu: ${t.title}`} role="img">
                 {BadgeIcon()}
               </div>
             )}
