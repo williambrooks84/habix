@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Header from "@/components/ui/auth/header";
 
 export const metadata = {
-  title: "Login - Habix",
+  title: "Habix - Inscription",
 };
 
 export default function SignupLayout({ children }: { children: ReactNode }) {
