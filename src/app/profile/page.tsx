@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import LoginPopin from '@/components/ui/auth/login-popin';
 import ProfilePictureUpload from '@/components/ui/profile/profile-picture-upload';
 import { useEffect, useState } from 'react';
-import { BadgeIcons } from '@/components/ui/icons';
 import UserBadges from '@/components/ui/badges/user-badges';
 
 export default function ProfilePage() {

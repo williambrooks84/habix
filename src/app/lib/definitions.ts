@@ -57,3 +57,13 @@ export type UserBadge = {
   points_required: number
   awarded_at: string
 }
+
+export type Notification = {
+  id: number
+  user_id: number
+  title: string
+  body?: string | null
+  data?: any
+  read: boolean
+  created_at: string
+}

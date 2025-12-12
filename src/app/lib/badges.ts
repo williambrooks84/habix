@@ -34,6 +34,19 @@ export async function awardBadgesForUser(userId: number) {
 
   const awarded: Array<{ id: string; name: string }> = [];
 
+  // Try to import notification helper once (non-fatal if it fails)
+  let createNotification: ((userId: number, title: string, body?: string | null, data?: any) => Promise<any | boolean>) | null = null;
+  try {
+    // dynamic import to avoid circular dependency issues
+    // path is relative to this file (same folder)
+    // Type of returned function may be boolean (current helper) or row if you switch it later
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    ({ createNotification } = await import('./notifications') as any);
+  } catch (e) {
+    // Notifications helper not available — continue without notifications
+    createNotification = null;
+  }
+
   for (const b of eligible) {
     const exists = await sql`
       SELECT 1 FROM user_badges
@@ -46,6 +59,23 @@ export async function awardBadgesForUser(userId: number) {
         VALUES (${userId}, ${b.id}, NOW())
       `;
       awarded.push({ id: b.id, name: b.name });
+
+      // Create a notification for the user (best-effort)
+      try {
+        if (createNotification) {
+          const title = `Nouveau badge : ${b.name}`;
+          const body = `Félicitations — vous avez obtenu le badge "${b.name}".`;
+          const data = { badgeId: b.id };
+
+          const notifResult = await createNotification(userId, title, body, data);
+          console.log('badge notification insert result for user', userId, 'badge', b.id, ':', notifResult);
+          if (!notifResult) {
+            console.warn('Badge notification not created (returned null/false).');
+          }
+        }
+      } catch (notifErr) {
+        console.error('Failed to create badge notification:', notifErr);
+      }
     }
   }
 

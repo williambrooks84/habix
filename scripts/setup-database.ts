@@ -285,6 +285,25 @@ async function setupDatabase() {
   `;
 
   console.log('✅ is_blocked column added (or already exists)');
+
+  // Create notifications table
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        body TEXT,
+        data JSONB,
+        read BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
+    console.log('✅ notifications table created (or already exists)');
+  } catch (err) {
+    console.error('❌ Error creating notifications table:', err);
+    process.exit(1);
+  }
 }
 
 setupDatabase();

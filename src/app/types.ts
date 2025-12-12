@@ -50,3 +50,11 @@ export type Badge = {
   points_required: number;
   icon: keyof typeof BadgeIcons | null;
 };
+
+export interface Notification {
+    id: number;
+    title: string;
+    body?: string | null;
+    read: boolean;
+    created_at: string;
+}

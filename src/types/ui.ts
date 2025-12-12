@@ -255,3 +255,21 @@ export interface UserFilterProps {
   selectedUserId: string | null
   onUserChange: (userId: string | null) => void
 }
+
+export interface NotificationOverlayProps {
+    open: boolean;
+    onClose: () => void;
+    onUnreadCountChange?: (count: number) => void;
+}
+
+export interface Notification {
+    id: number;
+    title: string;
+    body?: string | null;
+    read: boolean;
+    created_at: string;
+}
+
+export interface NotificationBadgeProps {
+  count: number;
+}

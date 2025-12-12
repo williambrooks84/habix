@@ -17,7 +17,6 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
     const [active, setActive] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // Check admin status from API
     useEffect(() => {
         if (session?.user) {
             fetch('/api/admin/check')
@@ -119,13 +118,13 @@ export default function MenuOverlay({ open, onClose }: MenuOverlayProps) {
         <>
             <div
                 aria-hidden="true"
-                className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-200 ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[74] transition-opacity duration-200 ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={onClose}
             />
 
             <nav
                 ref={overlayRef}
-                className={`fixed top-0 left-0 w-2/3 sm:w-1/2 md:w-1/3 lg:max-w-sm xl:max-w-md h-full z-50 bg-background/90 backdrop-blur-md rounded-md shadow-lg p-4 transform transition-transform duration-200 ease-out ${active ? 'translate-x-0' : '-translate-x-full'}`}
+                className={`fixed top-0 left-0 w-2/3 sm:w-1/2 md:w-1/3 lg:max-w-sm xl:max-w-md h-full z-[75] bg-background/90 backdrop-blur-md rounded-md shadow-lg p-4 transform transition-transform duration-200 ease-out ${active ? 'translate-x-0' : '-translate-x-full'}`}
                 aria-label="Navigation principale"
                 onClick={(e) => e.stopPropagation()}
             >
