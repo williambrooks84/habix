@@ -27,11 +27,15 @@ function StreakChartTooltipContent({ active, payload }: any) {
     );
 }
 
+const MemoizedStreakChartTooltipContent = React.memo(StreakChartTooltipContent);
+
 function CustomDot(props: any) {
     const { cx, cy } = props;
     if (cx == null || cy == null) return null;
     return <circle cx={cx} cy={cy} r={3} fill="var(--primary)" stroke="none" />;
 }
+
+const MemoizedCustomDot = React.memo(CustomDot);
 
 function calculateStreaks(completedDays: string[]) {
     if (!completedDays.length) return { current: 0, previous: 0 };
@@ -152,49 +156,53 @@ export function StreakChart({ completedDays, periodStart, periodEnd, frequencyTy
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const startDate = periodStart ? parseYMD(periodStart) : new Date(today.getTime() - 13 * 24 * 60 * 60 * 1000);
-    startDate.setHours(0, 0, 0, 0);
+    const { days, streaks } = React.useMemo(() => {
+        const startDate = periodStart ? parseYMD(periodStart) : new Date(today.getTime() - 13 * 24 * 60 * 60 * 1000);
+        startDate.setHours(0, 0, 0, 0);
 
-    let endDate = new Date(today);
-    if (periodEnd) {
-        const pEnd = parseYMD(periodEnd);
-        pEnd.setHours(0, 0, 0, 0);
-        endDate = pEnd < today ? pEnd : today;
-    }
+        let endDate = new Date(today);
+        if (periodEnd) {
+            const pEnd = parseYMD(periodEnd);
+            pEnd.setHours(0, 0, 0, 0);
+            endDate = pEnd < today ? pEnd : today;
+        }
 
-    const periodStartDate = periodStart ? parseYMD(periodStart) : null;
-    const periodEndDate = periodEnd ? parseYMD(periodEnd) : null;
+        const periodStartDate = periodStart ? parseYMD(periodStart) : null;
+        const periodEndDate = periodEnd ? parseYMD(periodEnd) : null;
 
-    const rawCount = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    const dayCount = Math.max(0, Math.min(rawCount, 30));
+        const rawCount = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        const dayCount = Math.max(0, Math.min(rawCount, 30));
 
-    const allDays = Array.from({ length: dayCount }, (_, i) => {
-        const d = new Date(startDate);
-        d.setDate(startDate.getDate() + i);
-        d.setHours(0, 0, 0, 0);
-        return d;
-    });
-
-    const days = allDays
-        .filter(d => {
-            if (!frequencyType) return true;
-            return isScheduledOnDate(frequencyType as FrequencyType, frequencyConfig, d, periodStartDate, periodEndDate);
-        })
-        .map(d => {
-            const ymd = formatYMD(d);
-            return {
-                date: ymd,
-                completed: completedDays.includes(ymd) ? 1 : 0,
-            };
+        const allDays = Array.from({ length: dayCount }, (_, i) => {
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() + i);
+            d.setHours(0, 0, 0, 0);
+            return d;
         });
-    
-    const streaks = calculateScheduledStreaks(
-        completedDays,
-        frequencyType,
-        frequencyConfig,
-        periodStart,
-        periodEnd
-    );
+
+        const daysData = allDays
+            .filter(d => {
+                if (!frequencyType) return true;
+                return isScheduledOnDate(frequencyType as FrequencyType, frequencyConfig, d, periodStartDate, periodEndDate);
+            })
+            .map(d => {
+                const ymd = formatYMD(d);
+                return {
+                    date: ymd,
+                    completed: completedDays.includes(ymd) ? 1 : 0,
+                };
+            });
+        
+        const streaksData = calculateScheduledStreaks(
+            completedDays,
+            frequencyType,
+            frequencyConfig,
+            periodStart,
+            periodEnd
+        );
+        
+        return { days: daysData, streaks: streaksData };
+    }, [completedDays, periodStart, periodEnd, frequencyType, frequencyConfig]);
     
     return (
         <div className="w-full space-y-4">
@@ -252,13 +260,13 @@ export function StreakChart({ completedDays, periodStart, periodEnd, frequencyTy
                             width={0}
                         />
                         <ReferenceLine y={1} stroke="#d1d5db" strokeWidth={1} />
-                        <Tooltip content={<StreakChartTooltipContent />} cursor={false} />
+                        <Tooltip content={<MemoizedStreakChartTooltipContent />} cursor={false} />
                         <Line
                             dataKey="completed"
                             type="monotone"
                             stroke="var(--primary)"
                             strokeWidth={2}
-                            dot={CustomDot}
+                            dot={<MemoizedCustomDot />}
                             activeDot={false}
                             isAnimationActive={true}
                             animationDuration={300}
@@ -269,3 +277,5 @@ export function StreakChart({ completedDays, periodStart, periodEnd, frequencyTy
         </div>
     );
 }
+
+export const MemoizedStreakChart = React.memo(StreakChart);

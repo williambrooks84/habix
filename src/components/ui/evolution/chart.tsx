@@ -15,6 +15,7 @@ import {
 import ChartStat from "./chart-stat";
 import { ChartTooltipContentProps } from "@/types/ui";
 import { cn } from "@/app/lib/utils";
+import { CompletionPoint } from "@/types/ui";
 
 type ChartConfig = Record<string, { label: string; color: string }>;
 
@@ -69,12 +70,7 @@ function ChartTooltipContent({
   );
 }
 
-type CompletionPoint = {
-  date: string;
-  scheduled: number;
-  completed: number;
-  percentage: number;
-};
+const MemoizedChartTooltipContent = React.memo(ChartTooltipContent);
 
 const chartConfig = {
   completion: {
@@ -172,6 +168,8 @@ export function ChartLineInteractive() {
       </g>
     );
   }
+
+  const MemoizedCustomDot = React.memo(CustomDot);
   return (
     <article className="bg-background text-foreground py-4 sm:py-0" aria-labelledby="chart-heading">
       <h2 id="chart-heading" className="text-lg font-semibold text-foreground mb-3">Votre progression quotidienne</h2>
@@ -179,17 +177,17 @@ export function ChartLineInteractive() {
         <ChartStat label="Aujourd'hui" value={latest} />
         <ChartStat label="Cette semaine" value={average} />
       </div>
-      <section className="text-sm text-muted-foreground " aria-labelledby="chart-heading">
+      <section className="text-sm text-muted-foreground min-h-[320px]" aria-labelledby="chart-heading">
         {error ? (
-          <div className="flex h-[250px] w-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-[320px] w-full items-center justify-center text-sm text-muted-foreground">
             {error}
           </div>
         ) : loading ? (
-          <div className="flex h-[250px] w-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-[320px] w-full items-center justify-center text-sm text-muted-foreground">
             Chargement des données…
           </div>
         ) : data.length === 0 ? (
-          <div className="flex h-[250px] w-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-[320px] w-full items-center justify-center text-sm text-muted-foreground">
             Aucune donnée disponible pour cette période.
           </div>
         ) : (
@@ -227,7 +225,7 @@ export function ChartLineInteractive() {
                 />
                 <ChartTooltip
                   content={
-                    <ChartTooltipContent
+                    <MemoizedChartTooltipContent
                       className="w-[160px]"
                       valueFormatter={(value) => `${value}% ce jour-là`}
                       labelFormatter={(value) => {
@@ -247,7 +245,7 @@ export function ChartLineInteractive() {
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  dot={(props) => <CustomDot {...props} />}
+                  dot={(props) => <MemoizedCustomDot {...props} />}
                   isAnimationActive={false}
                 />
               </LineChart>

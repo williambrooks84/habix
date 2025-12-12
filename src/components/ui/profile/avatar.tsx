@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useProfilePicture } from '@/components/wrappers/ProfilePictureContext';
 
 function getInitials(name?: string) {
@@ -30,11 +31,17 @@ export default function Avatar() {
 
     if (profilePictureUrl) {
         return (
-            <img
-                src={profilePictureUrl}
-                alt="Profile"
-                className="w-9 h-9 rounded-full object-cover border border-muted"
-            />
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-muted flex-shrink-0">
+                <Image
+                    src={profilePictureUrl}
+                    alt="Profile"
+                    width={36}
+                    height={36}
+                    className="w-full h-full object-cover"
+                    priority={false}
+                    sizes="36px"
+                />
+            </div>
         );
     }
 

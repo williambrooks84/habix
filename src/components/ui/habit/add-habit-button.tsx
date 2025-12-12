@@ -11,7 +11,7 @@ export default function AddHabitButton() {
 
   if (status === "loading") return null;
   if (!session) return null;
-  if (typeof pathname === 'string' && pathname.startsWith('/admin')) return null;
+  if (typeof pathname === 'string' && (pathname.startsWith('/admin') || pathname.startsWith('/habit/create'))) return null;
 
   return (
     <div aria-hidden={false} className="fixed bottom-6 right-6 z-50 bg-background rounded-4xl">

@@ -1,15 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { BurgerMenuIcon, ProfileIcon, NotificationIcon } from '@/components/ui/icons';
 import MenuOverlay from '@/components/menu-overlay';
-import NotificationOverlay from '@/components/notification-overlay';
 import NotificationBadge from '@/components/ui/notification-badge';
 import { getInitialTheme, applyTheme } from '@/app/lib/theme-toggle';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/profile/avatar';
 import { useSession } from 'next-auth/react';
 import PointsDisplay from '@/components/ui/profile/points-display';
+
+const NotificationOverlay = dynamic(
+  () => import('@/components/notification-overlay'),
+  { loading: () => null }
+);
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
@@ -25,7 +30,6 @@ export default function Header() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  // Fetch unread count periodically
   useEffect(() => {
     if (status !== 'authenticated') return;
 
@@ -41,11 +45,9 @@ export default function Header() {
       }
     };
 
-    // Fetch immediately on mount
     fetchUnreadCount();
 
-    // Then set up interval to sync every 10 seconds
-    const interval = setInterval(fetchUnreadCount, 10000);
+    const interval = setInterval(fetchUnreadCount, 30000);
 
     return () => clearInterval(interval);
   }, [status]);

@@ -1,13 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import Loading from '@/components/ui/loading/loading';
 import HomeDisconnected from '@/components/home-disconnected';
 import NoHabit from '@/components/ui/habit/no-habit';
 import TodayHabits from '@/components/habit/today-habits';
-import { ChartLineInteractive } from '@/components/ui/evolution/chart';
 import { Toast } from '@/components/ui/recommendation/recommendation-toast';
+import { ChartSkeleton } from '@/components/ui/evolution/chart-skeleton';
+
+const ChartLineInteractive = dynamic(
+  () => import('@/components/ui/evolution/chart').then(mod => ({ default: mod.ChartLineInteractive })),
+  { 
+    loading: () => <ChartSkeleton />,
+    ssr: true 
+  }
+);
 
 export default function Home() {
   const { data: session, status } = useSession();

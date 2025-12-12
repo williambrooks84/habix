@@ -1,15 +1,12 @@
-import * as React from "react";
 import { cn } from "@/app/lib/utils";
+import { ChartStatProps } from "@/types/ui";
+
 
 export default function ChartStat({
   label,
   value,
   className,
-}: {
-  label: string;
-  value: number;
-  className?: string;
-}) {
+}: ChartStatProps) {
   return (
     <div
       className={cn(

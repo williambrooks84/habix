@@ -5,7 +5,7 @@ import { DeleteIcon, CrossIcon } from "../icons";
 import { Button } from "../button";
 import ListDetail from "./list-detail";
 import { ListOverlayProps } from "@/types/ui";
-import { StreakChart } from "../streak/chart";
+import { MemoizedStreakChart } from "../streak/chart";
 import { useEffect, useState } from "react";
 
 export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProps) {
@@ -91,7 +91,7 @@ export default function ListOverlay({ item, onClose, onDelete }: ListOverlayProp
 
         <div className="mt-4 space-y-2">
           <h3 className="text-primary text-base">Streak :</h3>
-          <StreakChart 
+          <MemoizedStreakChart 
             key={item?.id}
             completedDays={completedData.days} 
             periodStart={completedData.periodStart} 

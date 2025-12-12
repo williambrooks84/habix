@@ -175,6 +175,18 @@ export type ChartTooltipContentProps = {
   labelFormatter?: (label: string) => React.ReactNode;
 };
 
+export type ChartStatProps = {
+  label: string;
+  value: number;
+  className?: string;
+};
+
+export type CompletionPoint = {
+  date: string;
+  scheduled: number;
+  completed: number;
+  percentage: number;
+};
 
 //Loading
 
